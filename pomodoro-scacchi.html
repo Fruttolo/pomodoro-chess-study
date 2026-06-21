@@ -56,7 +56,19 @@
   }
 
   /* ---- header ---- */
-  header{text-align:center;}
+  header{text-align:center;position:relative;}
+  .settings-toggle{
+    position:absolute;top:50%;right:0;transform:translateY(-50%);
+    background:var(--surface);border:1px solid var(--line);border-radius:10px;
+    width:36px;height:36px;display:flex;align-items:center;justify-content:center;
+    cursor:pointer;color:var(--muted);padding:0;
+    transition:color .15s,background .15s,border-color .15s;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .settings-toggle:hover{color:var(--text);background:var(--surface-2);}
+  .settings-toggle:active{background:var(--line);}
+  .settings-toggle.open{color:var(--text);background:var(--surface-2);border-color:var(--faint);}
+  .settings-toggle svg{width:17px;height:17px;}
   .eyebrow{
     font-size:.72rem;
     letter-spacing:.22em;
@@ -137,6 +149,8 @@
   }
 
   /* study / break identity */
+  .card[data-t="study"]{border-top:2px solid rgba(91,157,255,.22);}
+  .card[data-t="break"]{border-top:2px solid rgba(51,211,154,.20);}
   .card[data-t="study"] .dot-c{background:var(--study);}
   .card[data-t="break"] .dot-c{background:var(--break);}
 
@@ -232,10 +246,20 @@
     gap:14px 26px;
     justify-content:center;
     align-items:center;
-    padding:16px;
-    border:1px solid var(--line);
+    padding:0 16px;
+    border:1px solid transparent;
     border-radius:var(--radius);
     background:linear-gradient(180deg,var(--bg2),transparent);
+    overflow:hidden;
+    max-height:0;
+    opacity:0;
+    transition:max-height .35s ease, opacity .25s, padding .3s, border-color .25s;
+  }
+  .settings.open{
+    max-height:300px;
+    padding:16px;
+    border-color:var(--line);
+    opacity:1;
   }
   .set-group{display:flex;align-items:center;gap:10px;}
   .set-group .lbl{
@@ -336,6 +360,12 @@
     <header>
       <p class="eyebrow">Timer a scacchi</p>
       <h1>Studio<span class="swap">⇄</span>Pausa</h1>
+      <button class="settings-toggle" id="settingsToggle" type="button" aria-label="Impostazioni" title="Impostazioni">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="3"/>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+        </svg>
+      </button>
     </header>
 
     <section class="cards">
@@ -386,14 +416,6 @@
           </div>
         </div>
       </div>
-      <label class="set-group toggle-wrap" for="studySoundChk">
-        <div class="toggle-switch">
-          <input type="checkbox" id="studySoundChk" checked>
-          <div class="toggle-track"></div>
-          <div class="toggle-thumb"></div>
-        </div>
-        <span class="lbl">Suono studio</span>
-      </label>
       <div class="set-group">
         <span class="lbl">Pausa</span>
         <div class="timefield">
@@ -410,6 +432,14 @@
           </div>
         </div>
       </div>
+      <label class="set-group toggle-wrap" for="studySoundChk">
+        <div class="toggle-switch">
+          <input type="checkbox" id="studySoundChk" checked>
+          <div class="toggle-track"></div>
+          <div class="toggle-thumb"></div>
+        </div>
+        <span class="lbl">Suona quando finisce studio</span>
+      </label>
     </div>
 
   </div>
@@ -426,7 +456,7 @@
   const barStudy=$("barStudy"), barBreak=$("barBreak");
   const mainBtn=$("mainBtn"), stopBtn=$("stopBtn"), resetBtn=$("resetBtn");
   const studySoundChk=$("studySoundChk");
-  const settings=$("settings");
+  const settings=$("settings"), settingsToggle=$("settingsToggle");
   const studyMinVal=$("studyMinVal"), studySecVal=$("studySecVal");
   const breakMinVal=$("breakMinVal"), breakSecVal=$("breakSecVal");
   const studyMinDec=$("studyMinDec"), studyMinInc=$("studyMinInc");
@@ -668,6 +698,11 @@
   studySoundChk.addEventListener("change", ()=>{ studySoundEnabled=studySoundChk.checked; });
 
   document.addEventListener("visibilitychange", ()=>{ if(!document.hidden && ringing) ensureCtx(); });
+
+  settingsToggle.addEventListener("click", ()=>{
+    const open = settings.classList.toggle("open");
+    settingsToggle.classList.toggle("open", open);
+  });
 
 
   readInputs();
