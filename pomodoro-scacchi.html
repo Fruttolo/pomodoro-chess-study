@@ -316,6 +316,7 @@
   .sound-btn .icon-off{display:none;}
   .sound-btn.muted .icon-on{display:none;}
   .sound-btn.muted .icon-off{display:block;}
+  .sound-btn.break-sound{color:var(--break);}
 
   /* ---- footnote ---- */
   .note{
@@ -383,7 +384,22 @@
       <div class="card idle" data-t="break" id="cardBreak">
         <div class="top">
           <span class="name">Pausa</span>
-          <span class="pill" id="pillBreak">pronto</span>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <button class="sound-btn break-sound" id="breakSoundBtn" type="button" aria-label="Suona quando finisce pausa" title="Suona quando finisce pausa">
+              <svg class="icon-on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+              </svg>
+              <svg class="icon-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                <path d="M18.63 13A17.89 17.89 0 0 1 18 8"/>
+                <path d="M6.26 6.26A5.86 5.86 0 0 0 6 8c0 7-3 9-3 9h14"/>
+                <path d="M18 8a6 6 0 0 0-9.33-5"/>
+                <line x1="1" y1="1" x2="23" y2="23"/>
+              </svg>
+            </button>
+            <span class="pill" id="pillBreak">pronto</span>
+          </div>
         </div>
         <div class="time" id="timeBreak">05:00</div>
         <div class="bar"><i id="barBreak"></i></div>
@@ -449,7 +465,7 @@
   const pillStudy=$("pillStudy"), pillBreak=$("pillBreak");
   const barStudy=$("barStudy"), barBreak=$("barBreak");
   const mainBtn=$("mainBtn"), stopBtn=$("stopBtn"), resetBtn=$("resetBtn");
-  const studySoundBtn=$("studySoundBtn");
+  const studySoundBtn=$("studySoundBtn"), breakSoundBtn=$("breakSoundBtn");
   const settings=$("settings"), settingsToggle=$("settingsToggle");
   const studyMinVal=$("studyMinVal"), studySecVal=$("studySecVal");
   const breakMinVal=$("breakMinVal"), breakSecVal=$("breakSecVal");
@@ -462,7 +478,7 @@
 
   // ---------- stepper state ----------
   let sMin=25, sSec=0, bMin=5, bSec=0;
-  let studySoundEnabled=true;
+  let studySoundEnabled=true, breakSoundEnabled=true;
 
   // ---------- state ----------
   let phase="idle";          // "idle" | "running"
@@ -573,7 +589,7 @@
     }
 
     if(which==="study") studyDone=true; else breakDone=true;
-    if(which==="break") startSound();
+    if(which==="break" && breakSoundEnabled) startSound();
     if(which==="study" && studySoundEnabled) startSound();
     if(studyDone && breakDone){
       // both used up -> reset whole session, study runs again
@@ -692,6 +708,10 @@
   studySoundBtn.addEventListener("click", ()=>{
     studySoundEnabled=!studySoundEnabled;
     studySoundBtn.classList.toggle("muted",!studySoundEnabled);
+  });
+  breakSoundBtn.addEventListener("click", ()=>{
+    breakSoundEnabled=!breakSoundEnabled;
+    breakSoundBtn.classList.toggle("muted",!breakSoundEnabled);
   });
 
   document.addEventListener("visibilitychange", ()=>{ if(!document.hidden && ringing) ensureCtx(); });
