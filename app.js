@@ -21,7 +21,7 @@
   const breakSecDec=$("breakSecDec"), breakSecInc=$("breakSecInc");
   const statCycleCount=$("statCycleCount"), statCycleGoal=$("statCycleGoal");
   const goalDec=$("goalDec"), goalInc=$("goalInc");
-  const statStreak=$("statStreak"), statLogCount=$("statLogCount");
+  const statStreak=$("statStreak"), statTotalStudied=$("statTotalStudied"), statLogCount=$("statLogCount");
   const sessionLogList=$("sessionLogList");
 
   // ---------- stepper state ----------
@@ -89,7 +89,7 @@
     const startDate=new Date(Date.now()-elapsed);
     const startTime=startDate.toTimeString().slice(0,5);
     const durationSec=Math.round(elapsed/1000);
-    todayLog.push({startTime, durationSec, interruptions:currentInterruptions});
+    todayLog.push({startTime, durationSec, studySec:studyTotal, interruptions:currentInterruptions});
     updateStreak();
     saveStats();
     if(todayLog.length===cycleGoal) playGoalSound();
@@ -476,6 +476,9 @@
 
     const s=streakData.streak||0;
     statStreak.textContent=s===0?'–':s+(s===1?' day':' days');
+    const totalSec=todayLog.reduce((a,c)=>a+(c.studySec||c.durationSec),0);
+    const hh=Math.floor(totalSec/3600), mm=Math.floor((totalSec%3600)/60), ss=totalSec%60;
+    statTotalStudied.textContent=hh+':'+String(mm).padStart(2,'0')+':'+String(ss).padStart(2,'0');
 
     statLogCount.textContent=count+(count===1?' cycle':' cycles');
 
