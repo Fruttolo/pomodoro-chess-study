@@ -4,6 +4,7 @@
   // ---------- elements ----------
   const $ = id => document.getElementById(id);
   const cardStudy=$("cardStudy"), cardBreak=$("cardBreak");
+  const spotlightEl=$("cardSpotlight");
   const timeStudy=$("timeStudy"), timeBreak=$("timeBreak");
   const pillStudy=$("pillStudy"), pillBreak=$("pillBreak");
   const barStudy=$("barStudy"), barBreak=$("barBreak");
@@ -246,7 +247,32 @@
       active = (which==="study") ? "break" : "study";
     }
     lastTs=performance.now();
+    positionSpotlight(active==="study" ? cardStudy : cardBreak, active, false);
     render();
+  }
+
+  // ---------- spotlight animation ----------
+  function positionSpotlight(targetCard, type, instant, slowIntro){
+    if(instant){
+      spotlightEl.style.transition="none";
+      spotlightEl.offsetWidth; // force reflow
+    }
+    spotlightEl.style.left  =targetCard.offsetLeft  +"px";
+    spotlightEl.style.top   =targetCard.offsetTop   +"px";
+    spotlightEl.style.width =targetCard.offsetWidth +"px";
+    spotlightEl.style.height=targetCard.offsetHeight+"px";
+    spotlightEl.classList.toggle("study", type==="study");
+    spotlightEl.classList.toggle("break", type==="break");
+    if(instant){
+      spotlightEl.offsetWidth; // force reflow
+      spotlightEl.style.transition="";
+    }
+    if(slowIntro) spotlightEl.classList.add("slow-intro");
+    spotlightEl.classList.add("visible");
+    if(slowIntro) setTimeout(()=>spotlightEl.classList.remove("slow-intro"), 1200);
+  }
+  function hideSpotlight(){
+    spotlightEl.classList.remove("visible","study","break");
   }
 
   // ---------- actions ----------
@@ -258,6 +284,7 @@
     lastTs=performance.now();
     ensureLoop();
     render();
+    setTimeout(()=>{ if(phase==="running") positionSpotlight(cardStudy,"study",true,true); }, 340);
   }
   function switchActive(){
     if(phase!=="running") return;
@@ -265,6 +292,7 @@
     if(active==="break" && studyDone) return;
     active = (active==="study") ? "break" : "study";
     lastTs=performance.now();
+    positionSpotlight(active==="study" ? cardStudy : cardBreak, active, false);
     render();
   }
   function resetAll(){
@@ -274,6 +302,7 @@
     studyRem=studyTotal; breakRem=breakTotal;
     studyDone=false; breakDone=false;
     active="study";
+    hideSpotlight();
     render();
   }
 
@@ -397,6 +426,12 @@
     if(!document.hidden && ringing) ensureCtx();
     if(document.hidden && phase==='running') enterPip();
     else if(!document.hidden) exitPip();
+  });
+
+  window.addEventListener("resize", ()=>{
+    if(phase==="running"){
+      positionSpotlight(active==="study" ? cardStudy : cardBreak, active, true);
+    }
   });
 
   loadSettings();
