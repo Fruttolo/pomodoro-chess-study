@@ -280,17 +280,21 @@
 
   /* ---- sound icon button ---- */
   .sound-btn{
-    background:none;border:0;padding:0;
+    background:var(--surface-2);
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:0;
     cursor:pointer;color:var(--study);
-    width:22px;height:22px;
+    width:32px;height:32px;
     display:flex;align-items:center;justify-content:center;
     flex:0 0 auto;
     -webkit-tap-highlight-color:transparent;
-    transition:color .15s,opacity .15s;
+    transition:color .15s,background .15s,border-color .15s,box-shadow .15s;
   }
-  .sound-btn:hover{opacity:.75;}
-  .sound-btn svg{width:15px;height:15px;}
-  .sound-btn.muted{color:var(--faint);}
+  .sound-btn:hover{background:var(--line);border-color:var(--faint);}
+  .sound-btn:active{transform:scale(.93);}
+  .sound-btn svg{width:17px;height:17px;}
+  .sound-btn.muted{color:var(--faint);border-color:transparent;}
   .sound-btn .icon-off{display:none;}
   .sound-btn.muted .icon-on{display:none;}
   .sound-btn.muted .icon-off{display:block;}
@@ -334,6 +338,7 @@
         <div class="top">
           <span class="name">Studio</span>
           <div style="display:flex;align-items:center;gap:8px;">
+            <span class="pill" id="pillStudy">pronto</span>
             <button class="sound-btn muted" id="studySoundBtn" type="button" aria-label="Suona quando finisce studio" title="Suona quando finisce studio">
               <svg class="icon-on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
@@ -347,7 +352,6 @@
                 <line x1="1" y1="1" x2="23" y2="23"/>
               </svg>
             </button>
-            <span class="pill" id="pillStudy">pronto</span>
           </div>
         </div>
         <div class="time" id="timeStudy">25:00</div>
@@ -358,6 +362,7 @@
         <div class="top">
           <span class="name">Pausa</span>
           <div style="display:flex;align-items:center;gap:8px;">
+            <span class="pill" id="pillBreak">pronto</span>
             <button class="sound-btn break-sound" id="breakSoundBtn" type="button" aria-label="Suona quando finisce pausa" title="Suona quando finisce pausa">
               <svg class="icon-on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
@@ -371,7 +376,6 @@
                 <line x1="1" y1="1" x2="23" y2="23"/>
               </svg>
             </button>
-            <span class="pill" id="pillBreak">pronto</span>
           </div>
         </div>
         <div class="time" id="timeBreak">05:00</div>
