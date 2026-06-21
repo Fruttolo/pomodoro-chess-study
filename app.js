@@ -82,42 +82,46 @@
   }
 
   // ---------- audio (melodic chime) ----------
-  const NOTES=[523.25,659.25,783.99,1046.5]; // C5 E5 G5 C6 – major arpeggio
-  const NOTE_SPACING=0.34;   // seconds between note onsets
-  const PHRASE_INTERVAL=3200; // ms between phrase starts
-  let actx=null, melodyTimer=null;
+  const NOTES=[523.25,659.25,783.99,1046.5,783.99,659.25]; // C5 E5 G5 C6 G5 E5 – up then down
+  const NOTE_SPACING=0.22;   // seconds between note onsets
+  const PHRASE_INTERVAL=1320; // ms = NOTES.length * NOTE_SPACING * 1000 → seamless loop
+  let actx=null, melodyTimer=null, phraseCount=0;
 
   function ensureCtx(){
     if(!actx) actx=new (window.AudioContext||window.webkitAudioContext)();
     if(actx.state==="suspended") actx.resume();
     setupPip();
   }
-  function playNote(freq,startTime){
+  function playNote(freq,startTime,volume){
     const osc=actx.createOscillator(), gain=actx.createGain();
-    osc.type="sine";
+    osc.type="square";
     osc.frequency.value=freq;
     const t=startTime;
     gain.gain.setValueAtTime(0.001,t);
-    gain.gain.exponentialRampToValueAtTime(0.20,t+0.012);
-    gain.gain.exponentialRampToValueAtTime(0.001,t+1.1);
+    gain.gain.exponentialRampToValueAtTime(volume,t+0.012);
+    gain.gain.exponentialRampToValueAtTime(0.001,t+0.9);
     osc.connect(gain); gain.connect(actx.destination);
     osc.start(t); osc.stop(t+1.15);
   }
   function playPhrase(){
     if(!actx) return;
     const now=actx.currentTime+0.02;
-    NOTES.forEach((freq,i)=>playNote(freq,now+i*NOTE_SPACING));
+    const vol=Math.min(0.35, 0.04+phraseCount*0.05);
+    phraseCount++;
+    NOTES.forEach((freq,i)=>playNote(freq,now+i*NOTE_SPACING,vol));
   }
   function startSound(){
     ensureCtx();
     if(ringing) return;
     ringing=true;
+    phraseCount=0;
     playPhrase();
     melodyTimer=setInterval(playPhrase,PHRASE_INTERVAL);
     render();
   }
   function stopSound(){
     ringing=false;
+    phraseCount=0;
     if(melodyTimer){ clearInterval(melodyTimer); melodyTimer=null; }
     render();
   }
