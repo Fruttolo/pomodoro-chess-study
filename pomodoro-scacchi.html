@@ -227,56 +227,39 @@
 
   .hidden{display:none !important;}
 
-  /* ---- settings ---- */
-  .settings{
-    display:flex;
-    flex-wrap:wrap;
-    gap:14px 26px;
-    justify-content:center;
-    align-items:center;
-    padding:16px;
-    border:1px solid var(--line);
-    border-radius:var(--radius);
-    background:linear-gradient(180deg,var(--bg2),transparent);
-  }
-  .set-group{display:flex;align-items:center;gap:10px;}
-  .set-group .lbl{
-    font-size:.7rem;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);
-    min-width:54px;
-  }
-  .timefield{
-    display:flex;align-items:center;gap:6px;
-    background:var(--surface);
-    border:1px solid var(--line);
-    border-radius:10px;
-    padding:5px 8px;
-  }
-  .timefield .colon{color:var(--faint);font-family:var(--mono);padding:0 1px;}
-  .stepper{display:flex;align-items:center;gap:5px;}
-  .step-val{
-    font-family:var(--mono);font-size:1.05rem;font-weight:500;
-    color:var(--text);width:2.6ch;text-align:center;
-    background:transparent;border:0;padding:0;
-    -moz-appearance:textfield;appearance:textfield;
-  }
-  .step-val::-webkit-outer-spin-button,
-  .step-val::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;}
-  .step-val:focus{outline:none;}
-  .step-val:focus-visible{outline:2px solid #ffffff66;border-radius:4px;}
+  /* ---- card editor (stato idle) ---- */
+  .stepper{display:flex;align-items:center;gap:6px;}
   .step-btn{
     font-family:var(--mono);font-size:1.1rem;font-weight:700;
-    width:26px;height:26px;padding:0;
-    border:1px solid var(--line);border-radius:6px;
+    width:30px;height:30px;padding:0;
+    border:1px solid var(--line);border-radius:7px;
     background:var(--bg2);color:var(--muted);
     cursor:pointer;display:flex;align-items:center;justify-content:center;
     line-height:1;transition:background .12s,color .12s;
-    -webkit-tap-highlight-color:transparent;
+    -webkit-tap-highlight-color:transparent;flex:0 0 auto;
   }
-  .step-btn:hover:not(:disabled){background:var(--surface-2);color:var(--text);}
-  .step-btn:active:not(:disabled){background:var(--line);}
-  .step-btn:disabled{opacity:.35;cursor:not-allowed;}
-  .settings.locked{opacity:.5;}
-  .settings.locked .step-btn{pointer-events:none;}
+  .step-btn:hover{background:var(--surface-2);color:var(--text);}
+  .step-btn:active{background:var(--line);}
+  .card-editor{
+    display:flex;align-items:center;justify-content:center;
+    gap:8px;padding:10px 0 6px;
+  }
+  .card-editor .colon{
+    font-family:var(--mono);font-size:clamp(2rem,9vw,2.8rem);
+    font-weight:700;color:var(--faint);line-height:1;
+  }
+  .card-editor .step-val{
+    font-family:var(--mono);font-size:clamp(2.4rem,11vw,3.4rem);
+    font-weight:700;color:var(--text);
+    width:2.4ch;text-align:center;
+    background:transparent;border:0;padding:0;
+    -moz-appearance:textfield;appearance:textfield;
+    letter-spacing:-.02em;font-variant-numeric:tabular-nums;line-height:1;
+  }
+  .card-editor .step-val::-webkit-outer-spin-button,
+  .card-editor .step-val::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;}
+  .card-editor .step-val:focus{outline:none;}
+  .card-editor .step-val:focus-visible{outline:2px solid #ffffff66;border-radius:4px;}
 
   /* ---- sound icon button ---- */
   .sound-btn{
@@ -354,8 +337,21 @@
             </button>
           </div>
         </div>
-        <div class="time" id="timeStudy">25:00</div>
-        <div class="bar"><i id="barStudy"></i></div>
+        <div class="card-editor" id="studyEditor">
+          <div class="stepper">
+            <button class="step-btn" id="studyMinDec" type="button" aria-label="Diminuisci minuti studio">−</button>
+            <input class="step-val" id="studyMinVal" type="number" inputmode="numeric" min="0" max="999" value="25" aria-label="Minuti studio">
+            <button class="step-btn" id="studyMinInc" type="button" aria-label="Aumenta minuti studio">+</button>
+          </div>
+          <span class="colon">:</span>
+          <div class="stepper">
+            <button class="step-btn" id="studySecDec" type="button" aria-label="Diminuisci secondi studio">−</button>
+            <input class="step-val" id="studySecVal" type="number" inputmode="numeric" min="0" max="59" value="0" aria-label="Secondi studio">
+            <button class="step-btn" id="studySecInc" type="button" aria-label="Aumenta secondi studio">+</button>
+          </div>
+        </div>
+        <div class="time hidden" id="timeStudy">25:00</div>
+        <div class="bar hidden" id="barWrapStudy"><i id="barStudy"></i></div>
       </div>
 
       <div class="card idle" data-t="break" id="cardBreak">
@@ -378,8 +374,21 @@
             </button>
           </div>
         </div>
-        <div class="time" id="timeBreak">05:00</div>
-        <div class="bar"><i id="barBreak"></i></div>
+        <div class="card-editor" id="breakEditor">
+          <div class="stepper">
+            <button class="step-btn" id="breakMinDec" type="button" aria-label="Diminuisci minuti pausa">−</button>
+            <input class="step-val" id="breakMinVal" type="number" inputmode="numeric" min="0" max="999" value="5" aria-label="Minuti pausa">
+            <button class="step-btn" id="breakMinInc" type="button" aria-label="Aumenta minuti pausa">+</button>
+          </div>
+          <span class="colon">:</span>
+          <div class="stepper">
+            <button class="step-btn" id="breakSecDec" type="button" aria-label="Diminuisci secondi pausa">−</button>
+            <input class="step-val" id="breakSecVal" type="number" inputmode="numeric" min="0" max="59" value="0" aria-label="Secondi pausa">
+            <button class="step-btn" id="breakSecInc" type="button" aria-label="Aumenta secondi pausa">+</button>
+          </div>
+        </div>
+        <div class="time hidden" id="timeBreak">05:00</div>
+        <div class="bar hidden" id="barWrapBreak"><i id="barBreak"></i></div>
       </div>
     </section>
 
@@ -394,40 +403,6 @@
       <button class="btn ghost hidden" id="resetBtn" type="button">Reset</button>
     </div>
 
-    <div class="settings" id="settings">
-      <div class="set-group">
-        <span class="lbl">Studio</span>
-        <div class="timefield">
-          <div class="stepper">
-            <button class="step-btn" id="studyMinDec" type="button" aria-label="Diminuisci minuti studio">−</button>
-            <input class="step-val" id="studyMinVal" type="number" inputmode="numeric" min="0" max="999" value="25" aria-label="Minuti studio">
-            <button class="step-btn" id="studyMinInc" type="button" aria-label="Aumenta minuti studio">+</button>
-          </div>
-          <span class="colon">:</span>
-          <div class="stepper">
-            <button class="step-btn" id="studySecDec" type="button" aria-label="Diminuisci secondi studio">−</button>
-            <input class="step-val" id="studySecVal" type="number" inputmode="numeric" min="0" max="59" value="0" aria-label="Secondi studio">
-            <button class="step-btn" id="studySecInc" type="button" aria-label="Aumenta secondi studio">+</button>
-          </div>
-        </div>
-      </div>
-      <div class="set-group">
-        <span class="lbl">Pausa</span>
-        <div class="timefield">
-          <div class="stepper">
-            <button class="step-btn" id="breakMinDec" type="button" aria-label="Diminuisci minuti pausa">−</button>
-            <input class="step-val" id="breakMinVal" type="number" inputmode="numeric" min="0" max="999" value="5" aria-label="Minuti pausa">
-            <button class="step-btn" id="breakMinInc" type="button" aria-label="Aumenta minuti pausa">+</button>
-          </div>
-          <span class="colon">:</span>
-          <div class="stepper">
-            <button class="step-btn" id="breakSecDec" type="button" aria-label="Diminuisci secondi pausa">−</button>
-            <input class="step-val" id="breakSecVal" type="number" inputmode="numeric" min="0" max="59" value="0" aria-label="Secondi pausa">
-            <button class="step-btn" id="breakSecInc" type="button" aria-label="Aumenta secondi pausa">+</button>
-          </div>
-        </div>
-      </div>
-    </div>
 
   </div>
 
@@ -443,15 +418,14 @@
   const barStudy=$("barStudy"), barBreak=$("barBreak");
   const mainBtn=$("mainBtn"), stopBtn=$("stopBtn"), resetBtn=$("resetBtn");
   const studySoundBtn=$("studySoundBtn"), breakSoundBtn=$("breakSoundBtn");
-  const settings=$("settings");
+  const studyEditor=$("studyEditor"), breakEditor=$("breakEditor");
+  const barWrapStudy=$("barWrapStudy"), barWrapBreak=$("barWrapBreak");
   const studyMinVal=$("studyMinVal"), studySecVal=$("studySecVal");
   const breakMinVal=$("breakMinVal"), breakSecVal=$("breakSecVal");
   const studyMinDec=$("studyMinDec"), studyMinInc=$("studyMinInc");
   const studySecDec=$("studySecDec"), studySecInc=$("studySecInc");
   const breakMinDec=$("breakMinDec"), breakMinInc=$("breakMinInc");
   const breakSecDec=$("breakSecDec"), breakSecInc=$("breakSecInc");
-  const stepBtns=[studyMinDec,studyMinInc,studySecDec,studySecInc,
-                  breakMinDec,breakMinInc,breakSecDec,breakSecInc];
 
   // ---------- stepper state ----------
   let sMin=25, sSec=0, bMin=5, bSec=0;
@@ -648,10 +622,13 @@
     stopBtn.classList.toggle("hidden", !ringing);
     resetBtn.classList.toggle("hidden", phase!=="running");
 
-    const locked = phase==="running";
-    settings.classList.toggle("locked", locked);
-    stepBtns.forEach(el=>el.disabled=locked);
-    [studyMinVal,studySecVal,breakMinVal,breakSecVal].forEach(el=>el.disabled=locked);
+    const isIdle = phase==="idle";
+    studyEditor.classList.toggle("hidden", !isIdle);
+    breakEditor.classList.toggle("hidden", !isIdle);
+    timeStudy.classList.toggle("hidden", isIdle);
+    timeBreak.classList.toggle("hidden", isIdle);
+    barWrapStudy.classList.toggle("hidden", isIdle);
+    barWrapBreak.classList.toggle("hidden", isIdle);
 
     document.body.classList.toggle("ringing", ringing);
   }
