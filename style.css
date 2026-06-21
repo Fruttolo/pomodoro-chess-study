@@ -64,6 +64,14 @@ h1{
 h1 .swap{color:var(--muted);font-weight:500;padding:0 .12em;}
 .subtitle{margin:6px 0 0;font-size:.82rem;color:var(--faint);}
 
+/* ---- timer section (cards + actions) ---- */
+.timer-section{
+  display:flex;
+  flex-direction:column;
+  gap:22px;
+  min-height:370px;
+}
+
 /* ---- timer cards ---- */
 .cards{
   display:grid;
