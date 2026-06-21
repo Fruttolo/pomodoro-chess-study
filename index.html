@@ -103,29 +103,14 @@
         <h2 id="modalTitle">Study ⇄ Break</h2>
         <p class="modal-eyebrow">How it works</p>
 
-        <h3>Chess clock concept</h3>
-        <p>Two timers — <strong>Study</strong> and <strong>Break</strong> — run in alternation. Only one ticks at a time. Press <strong>Start</strong> to begin studying. Press <strong>Switch to break</strong> to hand control to Break. Press <strong>Resume study</strong> to switch back.</p>
+        <h3>Two timers, one active at a time</h3>
+        <p>Press <strong>Start</strong> to begin studying. Press <strong>Switch to break</strong> to move to Break. Only one timer ticks at a time.</p>
 
-        <h3>Study expires → break bank grows</h3>
-        <p>When Study hits zero it <em>does not</em> force you into a break. Instead it resets to full and keeps running — and one break block is <strong>added on top</strong> of whatever Break time is left. You decide when to take the break; the app just banks what you've earned.</p>
+        <h3>Study expires → break time banks up</h3>
+        <p>When Study hits zero it resets and keeps running — a break block is <strong>added</strong> to Break. You choose when to take the break.</p>
 
         <h3>Break expires → study resumes</h3>
-        <p>When Break runs out, Study takes over automatically. Once both timers have been fully used, the whole session resets and Study starts again from the top.</p>
-
-        <h3>Sound notifications</h3>
-        <p>Each card has a <strong>bell icon</strong> to toggle its end-of-timer chime independently. Both sounds are on by default. Tap <strong>Stop sound</strong> to silence a ringing alarm.</p>
-
-        <h3>Picture-in-picture</h3>
-        <p>While a session is running, switching to another tab automatically floats the active timer in a <strong>mini window</strong> via the browser's Picture-in-Picture API. It closes when you return to the tab.</p>
-
-        <h3>Advanced panel</h3>
-        <p>Tap <strong>Advanced</strong> to expand the stats panel. It shows your <strong>cycle count</strong> (one cycle = one full Study + Break pair) against a configurable <strong>goal</strong> (default 4). Adjust the goal with the <strong>+/−</strong> buttons next to it. The <strong>bell icon</strong> beside the cycle count toggles a completion sound when you hit the goal.</p>
-
-        <h3>Streak</h3>
-        <p>The <strong>Streak</strong> counter tracks consecutive days with at least one completed cycle. Miss a day and it resets to zero.</p>
-
-        <h3>Session log</h3>
-        <p>Each completed cycle is appended to today's log with a timestamp. The log persists across page reloads (stored in <code>localStorage</code>). Tap <strong>Clear all</strong> to wipe all saved data and reset counters.</p>
+        <p>When Break runs out, Study takes over automatically.</p>
       </div>
     </div>
 

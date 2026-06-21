@@ -1,6 +1,8 @@
-# Study ⇄ Break — Chess Clock Timer
+# Pomodoro Chess
 
-A study session timer inspired by the chess clock: one counter at a time, no installation, a single HTML file.
+A study session timer inspired by the chess clock: one counter at a time, no installation, no build step.
+
+**[Try it live →](https://fruttolo.github.io/pomodoro-chess-study/)**
 
 ## How it works
 
@@ -35,9 +37,12 @@ When Break runs out, Study takes over automatically. Once both timers have been 
 | Feature | Detail |
 |---|---|
 | Configurable durations | Minute/second steppers (0–999 min, 0–59 sec); values are also keyboard-editable |
+| Settings persistence | Timer durations and sound preferences saved across page reloads |
 | Sound notifications | Melodic arpeggio (C–E–G–C, Web Audio API); toggleable independently for Study and Break |
+| Goal sound toggle | Optional sound when a study goal is reached |
 | Visual indicator | Glowing border + breathing animation on the active block; red vignette during sound |
 | Progress bar | Shows remaining time proportional to configured duration |
+| Statistics | Session log per pomodoro cycle; total studied time displayed |
 | Picture-in-picture | Switching tabs while a session is running floats the active timer in a mini window; closes on return |
 | Reset button | Appears only during a session, with a slide-in animation |
 | Accessibility | `aria-label` on all controls; `prefers-reduced-motion` respected |
@@ -45,10 +50,10 @@ When Break runs out, Study takes over automatically. Once both timers have been 
 
 ## Usage
 
-Open `index.html` in any modern browser. No dependencies, no server, no build step.
+Open `index.html` in any modern browser — or use the [live version](https://fruttolo.github.io/pomodoro-chess-study/). No dependencies, no server, no build step.
 
 ```
-git clone <repo-url>
+git clone https://github.com/fruttolo/pomodoro-chess-study.git
 open index.html      # macOS
 xdg-open index.html  # Linux
 ```
@@ -62,7 +67,7 @@ xdg-open index.html  # Linux
 
 ## Structure
 
-Single file `index.html` + `style.css` + `app.js`. No npm, no framework, no config files. The only external resource is [JetBrains Mono](https://fonts.google.com/specimen/JetBrains+Mono) loaded from Google Fonts.
+`index.html` + `style.css` + `app.js`. No npm, no framework, no config files. The only external resource is [JetBrains Mono](https://fonts.google.com/specimen/JetBrains+Mono) loaded from Google Fonts.
 
 ## Compatibility
 
