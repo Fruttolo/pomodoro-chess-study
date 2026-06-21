@@ -334,7 +334,7 @@
         <div class="top">
           <span class="name">Studio</span>
           <div style="display:flex;align-items:center;gap:8px;">
-            <button class="sound-btn" id="studySoundBtn" type="button" aria-label="Suona quando finisce studio" title="Suona quando finisce studio">
+            <button class="sound-btn muted" id="studySoundBtn" type="button" aria-label="Suona quando finisce studio" title="Suona quando finisce studio">
               <svg class="icon-on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
                 <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
@@ -451,7 +451,7 @@
 
   // ---------- stepper state ----------
   let sMin=25, sSec=0, bMin=5, bSec=0;
-  let studySoundEnabled=true, breakSoundEnabled=true;
+  let studySoundEnabled=false, breakSoundEnabled=true;
 
   // ---------- state ----------
   let phase="idle";          // "idle" | "running"
