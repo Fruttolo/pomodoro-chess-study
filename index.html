@@ -300,6 +300,61 @@
   .sound-btn.break-sound{color:var(--break);}
   .sound-btn.break-sound.muted{color:var(--faint);}
 
+  /* ---- info button ---- */
+  .info-btn{
+    background:none;border:none;padding:0;
+    cursor:pointer;color:var(--faint);
+    display:inline-flex;align-items:center;justify-content:center;
+    width:22px;height:22px;
+    border-radius:50%;
+    vertical-align:middle;margin-left:6px;
+    transition:color .15s, background .15s;
+    -webkit-tap-highlight-color:transparent;
+    flex:0 0 auto;
+  }
+  .info-btn:hover{color:var(--muted);}
+  .info-btn:active{color:var(--text);}
+  .info-btn svg{width:18px;height:18px;}
+
+  /* ---- modal ---- */
+  .modal-overlay{
+    position:fixed;inset:0;z-index:100;
+    background:rgba(0,0,0,.72);
+    display:flex;align-items:center;justify-content:center;
+    padding:20px;
+    opacity:0;pointer-events:none;
+    transition:opacity .2s;
+  }
+  .modal-overlay.open{opacity:1;pointer-events:auto;}
+  .modal{
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:28px 26px 24px;
+    max-width:480px;width:100%;
+    max-height:80vh;overflow-y:auto;
+    position:relative;
+    transform:translateY(10px);
+    transition:transform .2s;
+    scrollbar-width:thin;scrollbar-color:var(--line) transparent;
+  }
+  .modal-overlay.open .modal{transform:translateY(0);}
+  .modal-close{
+    position:absolute;top:14px;right:14px;
+    background:none;border:none;cursor:pointer;
+    color:var(--faint);padding:4px;border-radius:6px;
+    display:flex;align-items:center;justify-content:center;
+    transition:color .15s,background .15s;
+  }
+  .modal-close:hover{color:var(--text);background:var(--line);}
+  .modal-close svg{width:18px;height:18px;}
+  .modal h2{margin:0 0 4px;font-size:1.05rem;font-weight:700;letter-spacing:-.01em;}
+  .modal .modal-eyebrow{font-size:.7rem;letter-spacing:.18em;text-transform:uppercase;color:var(--faint);margin:0 0 18px;}
+  .modal h3{font-size:.8rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin:18px 0 6px;font-weight:600;}
+  .modal p{margin:0 0 10px;font-size:.88rem;color:var(--muted);line-height:1.6;}
+  .modal p:last-child{margin-bottom:0;}
+  .modal strong{color:var(--text);font-weight:600;}
+
   /* ---- footnote ---- */
   .note{
     text-align:center;color:var(--faint);font-size:.8rem;line-height:1.55;
@@ -346,7 +401,7 @@
 <body>
   <div class="wrap">
     <header>
-      <h1>Pomodoro Chess</h1>
+      <h1>Pomodoro Chess<button class="info-btn" id="infoBtn" type="button" aria-label="How it works" title="How it works"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg></button></h1>
       <p class="subtitle">Pomodoro study timer, chess clock style.</p>
     </header>
 
@@ -425,6 +480,34 @@
         <div class="bar hidden" id="barWrapBreak"><i id="barBreak"></i></div>
       </div>
     </section>
+
+    <div class="modal-overlay" id="infoModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <div class="modal">
+        <button class="modal-close" id="modalClose" type="button" aria-label="Close">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+        <h2 id="modalTitle">Pomodoro Chess</h2>
+        <p class="modal-eyebrow">How it works</p>
+
+        <h3>The concept</h3>
+        <p>Pomodoro Chess combines the <strong>Pomodoro technique</strong> with a <strong>chess clock</strong>. Two timers run in alternation — Study and Break — and only one ticks at a time, just like a chess clock.</p>
+
+        <h3>Study timer</h3>
+        <p>Set your study duration (default <strong>25 min</strong>). Press <strong>Start</strong> and the study clock counts down. When it hits zero, it reloads and the accumulated break time grows — you earn a break block.</p>
+
+        <h3>Break timer</h3>
+        <p>Set your break duration (default <strong>5 min</strong>). Press <strong>Switch to break</strong> to pause study and run the break clock. When break time runs out, study resumes automatically.</p>
+
+        <h3>Chess clock behavior</h3>
+        <p>If the study timer finishes while break time is still available, a new study block is added and the break bank grows. Once both timers are fully used, the session resets and restarts automatically.</p>
+
+        <h3>Sound notifications</h3>
+        <p>Each card has a <strong>bell icon</strong> to toggle an end-of-timer chime. Break sound is on by default. Tap <strong>Stop sound</strong> to silence a ringing alarm.</p>
+
+        <h3>Picture-in-picture</h3>
+        <p>When you switch to another tab, the timer floats in a <strong>mini window</strong> via the browser's Picture-in-Picture API, so you can keep an eye on the countdown while working elsewhere.</p>
+      </div>
+    </div>
 
     <div class="actions">
       <button class="btn stop hidden" id="stopBtn" type="button">
@@ -772,6 +855,15 @@
   });
   stopBtn.addEventListener("click", ()=>{ ensureCtx(); stopSound(); });
   resetBtn.addEventListener("click", ()=>{ ensureCtx(); resetAll(); });
+
+  // ---------- info modal ----------
+  const infoModal=$("infoModal"), infoBtn=$("infoBtn"), modalClose=$("modalClose");
+  function openModal(){ infoModal.classList.add("open"); }
+  function closeModal(){ infoModal.classList.remove("open"); }
+  infoBtn.addEventListener("click", openModal);
+  modalClose.addEventListener("click", closeModal);
+  infoModal.addEventListener("click", e=>{ if(e.target===infoModal) closeModal(); });
+  document.addEventListener("keydown", e=>{ if(e.key==="Escape") closeModal(); });
 
   studyMinDec.addEventListener("click",()=>{ sMin=stepVal(sMin,-1,0,999); applyStep(); });
   studyMinInc.addEventListener("click",()=>{ sMin=stepVal(sMin,+1,0,999); applyStep(); });
