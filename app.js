@@ -22,6 +22,25 @@
   let sMin=25, sSec=0, bMin=5, bSec=0;
   let studySoundEnabled=true, breakSoundEnabled=true;
 
+  // ---------- persistence ----------
+  function saveSettings(){
+    localStorage.setItem('pomodoroSettings', JSON.stringify(
+      {sMin,sSec,bMin,bSec,studySoundEnabled,breakSoundEnabled}
+    ));
+  }
+  function loadSettings(){
+    try{
+      const s=JSON.parse(localStorage.getItem('pomodoroSettings'));
+      if(!s) return;
+      if(typeof s.sMin==='number') sMin=s.sMin;
+      if(typeof s.sSec==='number') sSec=s.sSec;
+      if(typeof s.bMin==='number') bMin=s.bMin;
+      if(typeof s.bSec==='number') bSec=s.bSec;
+      if(typeof s.studySoundEnabled==='boolean') studySoundEnabled=s.studySoundEnabled;
+      if(typeof s.breakSoundEnabled==='boolean') breakSoundEnabled=s.breakSoundEnabled;
+    }catch(e){}
+  }
+
   // ---------- state ----------
   let phase="idle";          // "idle" | "running"
   let active="study";        // "study" | "break"
@@ -50,6 +69,7 @@
     if(phase==="idle"){
       studyRem=studyTotal; breakRem=breakTotal;
     }
+    saveSettings();
     renderSteppers();
     render();
   }
@@ -361,10 +381,12 @@
   studySoundBtn.addEventListener("click", ()=>{
     studySoundEnabled=!studySoundEnabled;
     studySoundBtn.classList.toggle("muted",!studySoundEnabled);
+    saveSettings();
   });
   breakSoundBtn.addEventListener("click", ()=>{
     breakSoundEnabled=!breakSoundEnabled;
     breakSoundBtn.classList.toggle("muted",!breakSoundEnabled);
+    saveSettings();
   });
 
   document.addEventListener("visibilitychange", ()=>{
@@ -373,6 +395,9 @@
     else if(!document.hidden) exitPip();
   });
 
+  loadSettings();
+  studySoundBtn.classList.toggle("muted",!studySoundEnabled);
+  breakSoundBtn.classList.toggle("muted",!breakSoundEnabled);
   readInputs();
   studyRem=studyTotal; breakRem=breakTotal;
   renderSteppers();
