@@ -507,11 +507,11 @@ body.running #resetBtn{
   color:var(--faint);
   line-height:1;
 }
-.goal-wrap{display:flex;align-items:center;gap:3px;}
+.goal-wrap{display:flex;align-items:center;justify-content:center;gap:6px;}
 .goal-btn{
   font-family:var(--mono);font-size:.9rem;font-weight:700;
-  width:20px;height:20px;
-  border:1px solid var(--line);border-radius:5px;
+  width:28px;height:22px;
+  border:1px solid var(--line);border-radius:6px;
   background:var(--bg2);color:var(--muted);
   cursor:pointer;display:flex;align-items:center;justify-content:center;
   padding:0;line-height:1;
@@ -613,18 +613,13 @@ body.running #resetBtn{
 }
 .avanzate-clear:hover{border-color:var(--red);background:rgba(255,77,82,.08);}
 .avanzate-clear:active{background:rgba(255,77,82,.16);}
-.stat-label-row{
-  display:flex;
-  align-items:center;
-  gap:6px;
-}
 .goal-sound-btn{
   color:var(--orange);
-  width:22px;
-  height:22px;
-  border-radius:6px;
+  width:38px;
+  height:38px;
+  border-radius:10px;
 }
-.goal-sound-btn svg{width:12px;height:12px;}
+.goal-sound-btn svg{width:18px;height:18px;}
 .goal-sound-btn.muted{color:var(--faint);border-color:transparent;}
 
 @media (prefers-reduced-motion: reduce){

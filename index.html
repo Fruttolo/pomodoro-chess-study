@@ -117,6 +117,15 @@
 
         <h3>Picture-in-picture</h3>
         <p>While a session is running, switching to another tab automatically floats the active timer in a <strong>mini window</strong> via the browser's Picture-in-Picture API. It closes when you return to the tab.</p>
+
+        <h3>Advanced panel</h3>
+        <p>Tap <strong>Advanced</strong> to expand the stats panel. It shows your <strong>cycle count</strong> (one cycle = one full Study + Break pair) against a configurable <strong>goal</strong> (default 4). Adjust the goal with the <strong>+/−</strong> buttons next to it. The <strong>bell icon</strong> beside the cycle count toggles a completion sound when you hit the goal.</p>
+
+        <h3>Streak</h3>
+        <p>The <strong>Streak</strong> counter tracks consecutive days with at least one completed cycle. Miss a day and it resets to zero.</p>
+
+        <h3>Session log</h3>
+        <p>Each completed cycle is appended to today's log with a timestamp. The log persists across page reloads (stored in <code>localStorage</code>). Tap <strong>Clear all</strong> to wipe all saved data and reset counters.</p>
       </div>
     </div>
 
@@ -132,35 +141,37 @@
     </div>
     </div><!-- /.timer-section -->
 
-    <button class="avanzate-toggle" id="avanzateToggle" type="button" aria-expanded="false">Avanzate</button>
+    <button class="avanzate-toggle" id="avanzateToggle" type="button" aria-expanded="false">Advanced</button>
 
     <div class="avanzate-panel" id="avanzatePanel">
       <div class="stats-bar">
         <div class="stat-block">
-          <div class="stat-label-row">
-            <span class="stat-label">Ciclo</span>
-            <button class="sound-btn goal-sound-btn" id="goalSoundBtn" type="button" aria-label="Suono raggiungimento obiettivo" title="Suono raggiungimento obiettivo">
-              <svg class="icon-on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
-                <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
-              </svg>
-              <svg class="icon-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
-                <path d="M18.63 13A17.89 17.89 0 0 1 18 8"/>
-                <path d="M6.26 6.26A5.86 5.86 0 0 0 6 8c0 7-3 9-3 9h14"/>
-                <path d="M18 8a6 6 0 0 0-9.33-5"/>
-                <line x1="1" y1="1" x2="23" y2="23"/>
-              </svg>
-            </button>
-          </div>
+          <span class="stat-label">Goal sound</span>
+          <button class="sound-btn goal-sound-btn" id="goalSoundBtn" type="button" aria-label="Goal completion sound" title="Goal completion sound">
+            <svg class="icon-on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+              <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+            </svg>
+            <svg class="icon-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+              <path d="M18.63 13A17.89 17.89 0 0 1 18 8"/>
+              <path d="M6.26 6.26A5.86 5.86 0 0 0 6 8c0 7-3 9-3 9h14"/>
+              <path d="M18 8a6 6 0 0 0-9.33-5"/>
+              <line x1="1" y1="1" x2="23" y2="23"/>
+            </svg>
+          </button>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-block">
+          <span class="stat-label">Cycles</span>
           <div class="cycle-row">
             <span class="stat-num" id="statCycleCount">0</span>
             <span class="cycle-slash">/</span>
-            <div class="goal-wrap">
-              <button class="goal-btn" id="goalDec" type="button" aria-label="Diminuisci obiettivo">−</button>
-              <span class="stat-num" id="statCycleGoal">4</span>
-              <button class="goal-btn" id="goalInc" type="button" aria-label="Aumenta obiettivo">+</button>
-            </div>
+            <span class="stat-num" id="statCycleGoal">4</span>
+          </div>
+          <div class="goal-wrap">
+            <button class="goal-btn" id="goalDec" type="button" aria-label="Decrease goal">−</button>
+            <button class="goal-btn" id="goalInc" type="button" aria-label="Increase goal">+</button>
           </div>
         </div>
         <div class="stat-divider"></div>
@@ -171,12 +182,12 @@
       </div>
 
       <div class="session-log" id="sessionLogDetails">
-        <div class="log-summary">Oggi · <span id="statLogCount">0 cicli</span></div>
+        <div class="log-summary">Today · <span id="statLogCount">0 cycles</span></div>
         <ol class="log-list" id="sessionLogList"></ol>
       </div>
 
       <div class="avanzate-controls">
-        <button class="avanzate-clear" id="clearAllBtn" type="button">Pulisci tutto</button>
+        <button class="avanzate-clear" id="clearAllBtn" type="button">Clear all</button>
       </div>
     </div>
 

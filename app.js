@@ -475,15 +475,15 @@
     statCycleCount.classList.toggle("goal-reached", count>0 && count>=cycleGoal);
 
     const s=streakData.streak||0;
-    statStreak.textContent=s===0?'–':s+(s===1?' giorno':' giorni');
+    statStreak.textContent=s===0?'–':s+(s===1?' day':' days');
 
-    statLogCount.textContent=count+(count===1?' ciclo':' cicli');
+    statLogCount.textContent=count+(count===1?' cycle':' cycles');
 
     sessionLogList.innerHTML='';
     if(count===0){
       const li=document.createElement('li');
       li.className='log-empty';
-      li.textContent='Nessun ciclo completato oggi.';
+      li.textContent='No cycles completed today.';
       sessionLogList.appendChild(li);
     }else{
       todayLog.forEach((c,i)=>{
@@ -512,7 +512,7 @@
   const avanzateToggle=$("avanzateToggle"), avanzatePanel=$("avanzatePanel");
   function setAvanzate(open){
     avanzatePanel.classList.toggle("open", open);
-    avanzateToggle.textContent=open?"Nascondi":"Avanzate";
+    avanzateToggle.textContent=open?"Hide":"Advanced";
     avanzateToggle.setAttribute("aria-expanded", open?"true":"false");
     localStorage.setItem("pomodoroAvanzate", open?"1":"0");
   }
@@ -563,7 +563,7 @@
   });
 
   clearAllBtn.addEventListener("click", ()=>{
-    if(!confirm("Cancellare tutti i dati? Cicli, streak e obiettivo verranno azzerati.")) return;
+    if(!confirm("Clear all data? Cycles, streak and goal will be reset.")) return;
     todayLog=[];
     streakData={lastDate:null,streak:0};
     cycleGoal=4;
