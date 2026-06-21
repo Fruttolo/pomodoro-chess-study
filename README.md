@@ -38,12 +38,12 @@ This means unused break time accumulates. If you let Study expire twice before t
 
 ## Usage
 
-Open `pomodoro-scacchi.html` in any modern browser. No dependencies, no server, no build step.
+Open `index.html` in any modern browser. No dependencies, no server, no build step.
 
 ```
 git clone <repo-url>
-open pomodoro-scacchi.html      # macOS
-xdg-open pomodoro-scacchi.html  # Linux
+open index.html      # macOS
+xdg-open index.html  # Linux
 ```
 
 ### Default durations
@@ -55,7 +55,7 @@ xdg-open pomodoro-scacchi.html  # Linux
 
 ## Structure
 
-The project is a single file `pomodoro-scacchi.html` containing HTML, CSS, and JavaScript inline. No npm dependencies, no framework, no config files. The only external resource is the [JetBrains Mono](https://fonts.google.com/specimen/JetBrains+Mono) font loaded from Google Fonts.
+The project is a single file `index.html` containing HTML, CSS, and JavaScript inline. No npm dependencies, no framework, no config files. The only external resource is the [JetBrains Mono](https://fonts.google.com/specimen/JetBrains+Mono) font loaded from Google Fonts.
 
 ## Compatibility
 
