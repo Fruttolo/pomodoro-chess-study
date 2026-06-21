@@ -8,12 +8,12 @@ Timer pomodoro ispirato all'orologio da scacchi: **un timer alla volta**, nessun
 
 - Gira **un solo timer per volta** (Studio o Pausa)
 - Il bottone centrale **commuta manualmente** tra i due timer
-- Quando un timer scade → **suona** e passa automaticamente all'altro
+- Quando un timer scade → suona (se il suono è attivo) e passa automaticamente all'altro
 - Quando entrambi scadono → la sessione riparte da capo con lo Studio
 
 ### Caso speciale: Studio scade ma Pausa ha ancora tempo
 
-Se lo Studio finisce mentre la Pausa è ancora in corso (o non ancora avviata), **non suona** e non cambia timer: il blocco Studio viene resettato e un blocco Pausa extra viene accumulato sul rimanente della Pausa. L'utente continua a lavorare sulla Pausa finché non la commuta manualmente.
+Se lo Studio finisce mentre la Pausa è ancora in corso (o non ancora avviata), **non cambia timer**: il blocco Studio viene resettato, un blocco Pausa extra viene accumulato sul rimanente della Pausa, e suona (se il suono Studio è attivo). L'utente continua a lavorare sulla Pausa finché non la commuta manualmente.
 
 ### Stati delle card
 
@@ -34,11 +34,20 @@ Se lo Studio finisce mentre la Pausa è ancora in corso (o non ancora avviata), 
 
 **Reset** — appare durante la sessione; riporta tutto allo stato iniziale.
 
-**Impostazioni** — minuti e secondi per Studio e Pausa, configurabili solo a sessione ferma (default: 25:00 / 05:00).
+### Impostazioni durata
+
+Minuti e secondi si impostano **direttamente sulle card** tramite stepper (+/−) e input numerico, modificabili solo a sessione ferma (default: 25:00 Studio / 05:00 Pausa). Durante la sessione gli input diventano sola lettura e mostrano il tempo rimanente.
+
+### Suono per-timer
+
+Ogni card ha un **bottone campanellino** indipendente per abilitare/disabilitare il suono alla scadenza:
+
+- **Studio** — muto di default
+- **Pausa** — attivo di default
 
 ## Suono
 
-Allarme continuo a due toni (quadra 900 Hz / 680 Hz alternati ogni 400 ms) tramite Web Audio API. L'audio viene sbloccato al primo click dell'utente (requisito browser).
+Arpeggio melodico in do maggiore (C5–E5–G5–C6, onda sinusoidale) che si ripete ogni 3,2 s tramite Web Audio API. L'audio viene sbloccato al primo click dell'utente (requisito browser).
 
 ## Uso
 
