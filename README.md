@@ -1,54 +1,52 @@
 # Studio ⇄ Pausa — Timer a scacchi
 
-Timer pomodoro ispirato all'orologio da scacchi: **un timer alla volta**, nessun switch automatico silenzioso.
+Timer per sessioni di studio ispirato all'orologio degli scacchi: un contatore alla volta, nessuna installazione, un unico file HTML.
 
 ## Come funziona
 
-### Logica a scacchi
+Il timer funziona come un orologio da scacchi: solo un blocco conta alla volta. Avviando la sessione parte il timer **Studio**; premendo il pulsante principale si passa al timer **Pausa**, e viceversa.
 
-- Gira **un solo timer per volta** (Studio o Pausa)
-- Il bottone centrale **commuta manualmente** tra i due timer
-- Quando un timer scade → suona (se il suono è attivo) e passa automaticamente all'altro
-- Quando entrambi scadono → la sessione riparte da capo con lo Studio
+### Logica di fine fase
 
-### Caso speciale: Studio scade ma Pausa ha ancora tempo
+- **Studio finisce, Pausa ha ancora tempo** → il blocco Studio si azzera e ricomincia, e il tempo di Pausa maturato viene *accumulato* sul timer Pausa (non si perde).
+- **Studio finisce, Pausa è già esaurita** → Studio è marcato come esaurito e il controllo passa a Pausa.
+- **Pausa finisce** → il controllo torna automaticamente a Studio.
+- **Entrambi esauriti** → la sessione riparte dall'inizio.
 
-Se lo Studio finisce mentre la Pausa è ancora in corso (o non ancora avviata), **non cambia timer**: il blocco Studio viene resettato, un blocco Pausa extra viene accumulato sul rimanente della Pausa, e suona (se il suono Studio è attivo). L'utente continua a lavorare sulla Pausa finché non la commuta manualmente.
+## Funzionalità
 
-### Stati delle card
+| Funzione | Dettaglio |
+|---|---|
+| Durate configurabili | Stepper minuti/secondi (0–999 min, 0–59 sec) editabili anche da tastiera |
+| Notifiche sonore | Arpeggio melodico (Do–Mi–Sol–Do, Web Audio API), attivabile separatamente per Studio e Pausa |
+| Indicatore visivo | Bordo luminoso + animazione respiro sul blocco attivo; vignette rossa durante il suono |
+| Barra di avanzamento | Mostra il tempo rimanente proporzionale alla durata impostata |
+| Reset | Pulsante che appare solo durante la sessione, con animazione slide-in |
+| Accessibilità | `aria-label` su tutti i controlli, `prefers-reduced-motion` rispettato |
+| Responsive | Layout a griglia fluida, supporto safe area per dispositivi mobili |
 
-| Stato | Significato |
-|-------|-------------|
-| `in corso` | Timer attivo, sta scorrendo |
-| `in attesa` | Sessione avviata, questo timer è in pausa |
-| `esaurito` | Timer finito (non si può commutare su di esso) |
-| `pronto` | Sessione non ancora avviata |
+## Utilizzo
 
-## Interfaccia
+Aprire `pomodoro-scacchi.html` in qualsiasi browser moderno. Nessuna dipendenza, nessun server, nessun build step.
 
-**Bottone principale**
-- `Avvia` → parte lo Studio
-- `Passa a pausa` / `Riprendi studio` → commuta il timer attivo (disabilitato se il timer di destinazione è esaurito)
+```
+# clona e apri
+git clone <repo-url>
+open pomodoro-scacchi.html   # macOS
+xdg-open pomodoro-scacchi.html  # Linux
+```
 
-**Ferma suono** — appare solo quando l'allarme suona; lo ferma senza resettare la sessione.
+### Impostazioni predefinite
 
-**Reset** — appare durante la sessione; riporta tutto allo stato iniziale.
+| Blocco | Durata |
+|---|---|
+| Studio | 25:00 |
+| Pausa | 05:00 |
 
-### Impostazioni durata
+## Struttura
 
-Minuti e secondi si impostano **direttamente sulle card** tramite stepper (+/−) e input numerico, modificabili solo a sessione ferma (default: 25:00 Studio / 05:00 Pausa). Durante la sessione gli input diventano sola lettura e mostrano il tempo rimanente.
+Il progetto è un singolo file `pomodoro-scacchi.html` che contiene HTML, CSS e JavaScript inline. Non ci sono dipendenze npm, framework o file di configurazione. L'unica risorsa esterna è il font [JetBrains Mono](https://fonts.google.com/specimen/JetBrains+Mono) caricato da Google Fonts.
 
-### Suono per-timer
+## Compatibilità
 
-Ogni card ha un **bottone campanellino** indipendente per abilitare/disabilitare il suono alla scadenza:
-
-- **Studio** — muto di default
-- **Pausa** — attivo di default
-
-## Suono
-
-Arpeggio melodico in do maggiore (C5–E5–G5–C6, onda sinusoidale) che si ripete ogni 3,2 s tramite Web Audio API. L'audio viene sbloccato al primo click dell'utente (requisito browser).
-
-## Uso
-
-Apri `pomodoro-scacchi.html` in qualsiasi browser moderno — nessuna dipendenza, nessun server richiesto. Le uniche risorse esterne sono il font JetBrains Mono (Google Fonts) e la Web Audio API nativa.
+Richiede un browser con supporto a **Web Audio API** (tutti i browser desktop/mobile moderni). Il suono viene inizializzato al primo click dell'utente per rispettare le policy autoplay dei browser.
