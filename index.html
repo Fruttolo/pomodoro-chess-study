@@ -563,6 +563,7 @@
     const total=active==='study'?studyTotal:breakTotal;
     const label=active==='study'?'STUDY':'BREAK';
     const color=active==='study'?'#5b9dff':'#33d39a';
+    const soundOn=active==='study'?studySoundEnabled:breakSoundEnabled;
     const progress=total>0?Math.max(0,Math.min(1,rem/total)):0;
     pipCtx.fillStyle='#0f1115';
     pipCtx.fillRect(0,0,w,h);
@@ -577,6 +578,35 @@
     pipCtx.fillRect(24,140,w-48,5);
     pipCtx.fillStyle=color;
     pipCtx.fillRect(24,140,(w-48)*progress,5);
+    // bell icon top-right (only when muted)
+    if(!soundOn){
+      const bx=w-30, by=32, bs=10;
+      pipCtx.save();
+      pipCtx.lineWidth=1.5;
+      pipCtx.lineCap='round';
+      pipCtx.lineJoin='round';
+      pipCtx.strokeStyle='#3a4155';
+      pipCtx.beginPath();
+      pipCtx.moveTo(bx-bs*0.55,by+bs*0.35);
+      pipCtx.bezierCurveTo(bx-bs*0.55,by-bs*0.55,bx+bs*0.55,by-bs*0.55,bx+bs*0.55,by+bs*0.35);
+      pipCtx.lineTo(bx+bs*0.75,by+bs*0.55);
+      pipCtx.lineTo(bx-bs*0.75,by+bs*0.55);
+      pipCtx.closePath();
+      pipCtx.stroke();
+      pipCtx.beginPath();
+      pipCtx.arc(bx,by+bs*0.7,bs*0.18,0,Math.PI*2);
+      pipCtx.stroke();
+      pipCtx.beginPath();
+      pipCtx.moveTo(bx-bs*0.18,by-bs*0.55);
+      pipCtx.bezierCurveTo(bx-bs*0.18,by-bs*0.85,bx+bs*0.18,by-bs*0.85,bx+bs*0.18,by-bs*0.55);
+      pipCtx.stroke();
+      pipCtx.strokeStyle='#e05555';
+      pipCtx.beginPath();
+      pipCtx.moveTo(bx-bs*0.7,by-bs*0.7);
+      pipCtx.lineTo(bx+bs*0.7,by+bs*0.7);
+      pipCtx.stroke();
+      pipCtx.restore();
+    }
   }
   async function enterPip(){
     if(!pipVideo||!document.pictureInPictureEnabled||phase!=='running') return;
