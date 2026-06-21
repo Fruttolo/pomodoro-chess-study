@@ -300,35 +300,22 @@
   .settings.locked{opacity:.5;}
   .settings.locked .step-btn{pointer-events:none;}
 
-  /* ---- sound toggle ---- */
-  .toggle-wrap{display:flex;align-items:center;gap:9px;cursor:pointer;user-select:none;}
-  .toggle-wrap .lbl{
-    font-size:.7rem;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);
+  /* ---- sound icon button ---- */
+  .sound-btn{
+    background:none;border:0;padding:0;
+    cursor:pointer;color:var(--study);
+    width:22px;height:22px;
+    display:flex;align-items:center;justify-content:center;
+    flex:0 0 auto;
+    -webkit-tap-highlight-color:transparent;
+    transition:color .15s,opacity .15s;
   }
-  .toggle-switch{
-    position:relative;width:38px;height:22px;flex:0 0 auto;
-  }
-  .toggle-switch input{opacity:0;width:0;height:0;position:absolute;}
-  .toggle-track{
-    position:absolute;inset:0;
-    background:var(--surface-2);border:1px solid var(--line);border-radius:999px;
-    transition:background .2s,border-color .2s;
-  }
-  .toggle-thumb{
-    position:absolute;top:3px;left:3px;
-    width:14px;height:14px;border-radius:50%;
-    background:var(--faint);
-    transition:transform .18s,background .2s;
-  }
-  .toggle-switch input:checked ~ .toggle-track{
-    background:rgba(91,157,255,.18);border-color:var(--study);
-  }
-  .toggle-switch input:checked ~ .toggle-thumb{
-    transform:translateX(16px);background:var(--study);
-  }
-  .toggle-switch input:focus-visible ~ .toggle-track{
-    outline:2px solid #ffffff66;outline-offset:2px;
-  }
+  .sound-btn:hover{opacity:.75;}
+  .sound-btn svg{width:15px;height:15px;}
+  .sound-btn.muted{color:var(--faint);}
+  .sound-btn .icon-off{display:none;}
+  .sound-btn.muted .icon-on{display:none;}
+  .sound-btn.muted .icon-off{display:block;}
 
   /* ---- footnote ---- */
   .note{
@@ -372,7 +359,22 @@
       <div class="card idle" data-t="study" id="cardStudy">
         <div class="top">
           <span class="name">Studio</span>
-          <span class="pill" id="pillStudy">pronto</span>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <button class="sound-btn" id="studySoundBtn" type="button" aria-label="Suona quando finisce studio" title="Suona quando finisce studio">
+              <svg class="icon-on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+              </svg>
+              <svg class="icon-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                <path d="M18.63 13A17.89 17.89 0 0 1 18 8"/>
+                <path d="M6.26 6.26A5.86 5.86 0 0 0 6 8c0 7-3 9-3 9h14"/>
+                <path d="M18 8a6 6 0 0 0-9.33-5"/>
+                <line x1="1" y1="1" x2="23" y2="23"/>
+              </svg>
+            </button>
+            <span class="pill" id="pillStudy">pronto</span>
+          </div>
         </div>
         <div class="time" id="timeStudy">25:00</div>
         <div class="bar"><i id="barStudy"></i></div>
@@ -432,14 +434,6 @@
           </div>
         </div>
       </div>
-      <label class="set-group toggle-wrap" for="studySoundChk">
-        <div class="toggle-switch">
-          <input type="checkbox" id="studySoundChk" checked>
-          <div class="toggle-track"></div>
-          <div class="toggle-thumb"></div>
-        </div>
-        <span class="lbl">Suona quando finisce studio</span>
-      </label>
     </div>
 
   </div>
@@ -455,7 +449,7 @@
   const pillStudy=$("pillStudy"), pillBreak=$("pillBreak");
   const barStudy=$("barStudy"), barBreak=$("barBreak");
   const mainBtn=$("mainBtn"), stopBtn=$("stopBtn"), resetBtn=$("resetBtn");
-  const studySoundChk=$("studySoundChk");
+  const studySoundBtn=$("studySoundBtn");
   const settings=$("settings"), settingsToggle=$("settingsToggle");
   const studyMinVal=$("studyMinVal"), studySecVal=$("studySecVal");
   const breakMinVal=$("breakMinVal"), breakSecVal=$("breakSecVal");
@@ -695,7 +689,10 @@
     el.addEventListener("blur",()=>{ renderSteppers(); });
   });
 
-  studySoundChk.addEventListener("change", ()=>{ studySoundEnabled=studySoundChk.checked; });
+  studySoundBtn.addEventListener("click", ()=>{
+    studySoundEnabled=!studySoundEnabled;
+    studySoundBtn.classList.toggle("muted",!studySoundEnabled);
+  });
 
   document.addEventListener("visibilitychange", ()=>{ if(!document.hidden && ringing) ensureCtx(); });
 
