@@ -10,6 +10,7 @@
   const barStudy=$("barStudy"), barBreak=$("barBreak");
   const mainBtn=$("mainBtn"), stopBtn=$("stopBtn"), resetBtn=$("resetBtn");
   const studySoundBtn=$("studySoundBtn"), breakSoundBtn=$("breakSoundBtn");
+  const goalSoundBtn=$("goalSoundBtn"), clearAllBtn=$("clearAllBtn");
   const studyEditor=$("studyEditor"), breakEditor=$("breakEditor");
   const barWrapStudy=$("barWrapStudy"), barWrapBreak=$("barWrapBreak");
   const studyMinVal=$("studyMinVal"), studySecVal=$("studySecVal");
@@ -25,7 +26,7 @@
 
   // ---------- stepper state ----------
   let sMin=25, sSec=0, bMin=5, bSec=0;
-  let studySoundEnabled=true, breakSoundEnabled=true;
+  let studySoundEnabled=true, breakSoundEnabled=true, goalSoundEnabled=false;
 
   // ---------- stats state ----------
   let cycleGoal=4;
@@ -37,7 +38,7 @@
   // ---------- persistence ----------
   function saveSettings(){
     localStorage.setItem('pomodoroSettings', JSON.stringify(
-      {sMin,sSec,bMin,bSec,studySoundEnabled,breakSoundEnabled}
+      {sMin,sSec,bMin,bSec,studySoundEnabled,breakSoundEnabled,goalSoundEnabled}
     ));
   }
   function loadSettings(){
@@ -50,6 +51,7 @@
       if(typeof s.bSec==='number') bSec=s.bSec;
       if(typeof s.studySoundEnabled==='boolean') studySoundEnabled=s.studySoundEnabled;
       if(typeof s.breakSoundEnabled==='boolean') breakSoundEnabled=s.breakSoundEnabled;
+      if(typeof s.goalSoundEnabled==='boolean') goalSoundEnabled=s.goalSoundEnabled;
     }catch(e){}
   }
 
@@ -184,6 +186,7 @@
 
   // ---------- goal sound (fanfare, played once) ----------
   function playGoalSound(){
+    if(!goalSoundEnabled) return;
     ensureCtx();
     if(!actx) return;
     const notes=[523.25,659.25,783.99,1046.5,1318.51]; // C5 E5 G5 C6 E6
@@ -506,6 +509,16 @@
   resetBtn.addEventListener("click", ()=>{ ensureCtx(); resetAll(); });
 
   // ---------- info modal ----------
+  const avanzateToggle=$("avanzateToggle"), avanzatePanel=$("avanzatePanel");
+  function setAvanzate(open){
+    avanzatePanel.classList.toggle("open", open);
+    avanzateToggle.textContent=open?"Nascondi":"Avanzate";
+    avanzateToggle.setAttribute("aria-expanded", open?"true":"false");
+    localStorage.setItem("pomodoroAvanzate", open?"1":"0");
+  }
+  setAvanzate(localStorage.getItem("pomodoroAvanzate")==="1");
+  avanzateToggle.addEventListener("click",()=>setAvanzate(!avanzatePanel.classList.contains("open")));
+
   const infoModal=$("infoModal"), infoBtn=$("infoBtn"), modalClose=$("modalClose");
   function openModal(){ infoModal.classList.add("open"); }
   function closeModal(){ infoModal.classList.remove("open"); }
@@ -543,6 +556,21 @@
     saveSettings();
   });
 
+  goalSoundBtn.addEventListener("click", ()=>{
+    goalSoundEnabled=!goalSoundEnabled;
+    goalSoundBtn.classList.toggle("muted",!goalSoundEnabled);
+    saveSettings();
+  });
+
+  clearAllBtn.addEventListener("click", ()=>{
+    if(!confirm("Cancellare tutti i dati? Cicli, streak e obiettivo verranno azzerati.")) return;
+    todayLog=[];
+    streakData={lastDate:null,streak:0};
+    cycleGoal=4;
+    saveStats();
+    renderStats();
+  });
+
   goalDec.addEventListener("click",()=>{
     cycleGoal=Math.max(1,cycleGoal-1);
     saveStats();
@@ -570,6 +598,7 @@
   loadStats();
   studySoundBtn.classList.toggle("muted",!studySoundEnabled);
   breakSoundBtn.classList.toggle("muted",!breakSoundEnabled);
+  goalSoundBtn.classList.toggle("muted",!goalSoundEnabled);
   readInputs();
   studyRem=studyTotal; breakRem=breakTotal;
   renderSteppers();
