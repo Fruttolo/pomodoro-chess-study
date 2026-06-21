@@ -1,52 +1,62 @@
-# Studio ⇄ Pausa — Timer a scacchi
+# Study ⇄ Break — Chess Clock Timer
 
-Timer per sessioni di studio ispirato all'orologio degli scacchi: un contatore alla volta, nessuna installazione, un unico file HTML.
+A study session timer inspired by the chess clock: one counter at a time, no installation, a single HTML file.
 
-## Come funziona
+## How the timer works
 
-Il timer funziona come un orologio da scacchi: solo un blocco conta alla volta. Avviando la sessione parte il timer **Studio**; premendo il pulsante principale si passa al timer **Pausa**, e viceversa.
+The timer operates like a chess clock — only one block counts down at a time. When you start a session, the **Study** timer begins. Pressing the main button hands control over to the **Break** timer, and pressing again hands it back.
 
-### Logica di fine fase
+### The key rule: study end does not force a break
 
-- **Studio finisce, Pausa ha ancora tempo** → il blocco Studio si azzera e ricomincia, e il tempo di Pausa maturato viene *accumulato* sul timer Pausa (non si perde).
-- **Studio finisce, Pausa è già esaurita** → Studio è marcato come esaurito e il controllo passa a Pausa.
-- **Pausa finisce** → il controllo torna automaticamente a Studio.
-- **Entrambi esauriti** → la sessione riparte dall'inizio.
+When the Study timer reaches zero, **the app does not automatically switch you to Break**. Instead:
 
-## Funzionalità
+- Study resets to its full configured duration and keeps running.
+- One full Break block is **added on top of whatever Break time is left**.
 
-| Funzione | Dettaglio |
+This means unused break time accumulates. If you let Study expire twice before taking a break, your Break timer will have two break blocks banked on top of each other. You decide when to actually take the break — the timer just keeps track of how much you have earned.
+
+### Full phase logic
+
+| Situation | What happens |
 |---|---|
-| Durate configurabili | Stepper minuti/secondi (0–999 min, 0–59 sec) editabili anche da tastiera |
-| Notifiche sonore | Arpeggio melodico (Do–Mi–Sol–Do, Web Audio API), attivabile separatamente per Studio e Pausa |
-| Indicatore visivo | Bordo luminoso + animazione respiro sul blocco attivo; vignette rossa durante il suono |
-| Barra di avanzamento | Mostra il tempo rimanente proporzionale alla durata impostata |
-| Reset | Pulsante che appare solo durante la sessione, con animazione slide-in |
-| Accessibilità | `aria-label` su tutti i controlli, `prefers-reduced-motion` rispettato |
-| Responsive | Layout a griglia fluida, supporto safe area per dispositivi mobili |
+| Study expires, Break still has time | Study resets and restarts; one Break block added to Break's remaining time; sound plays (if enabled) |
+| Study expires, Break already used up | Study is marked exhausted; control passes to Break automatically |
+| Break expires | Control passes back to Study automatically |
+| Both expired | Full reset; Study starts again from the top |
 
-## Utilizzo
+## Features
 
-Aprire `pomodoro-scacchi.html` in qualsiasi browser moderno. Nessuna dipendenza, nessun server, nessun build step.
+| Feature | Detail |
+|---|---|
+| Configurable durations | Minute/second steppers (0–999 min, 0–59 sec); values are also keyboard-editable |
+| Sound notifications | Melodic arpeggio (C–E–G–C, Web Audio API); can be toggled independently for Study and Break |
+| Visual indicator | Glowing border + breathing animation on the active block; red vignette during sound |
+| Progress bar | Shows remaining time proportional to the configured duration |
+| Reset button | Appears only during a session, with a slide-in animation |
+| Accessibility | `aria-label` on all controls; `prefers-reduced-motion` respected |
+| Responsive | Fluid grid layout; mobile safe-area support |
+
+## Usage
+
+Open `pomodoro-scacchi.html` in any modern browser. No dependencies, no server, no build step.
 
 ```
-# clona e apri
 git clone <repo-url>
-open pomodoro-scacchi.html   # macOS
+open pomodoro-scacchi.html      # macOS
 xdg-open pomodoro-scacchi.html  # Linux
 ```
 
-### Impostazioni predefinite
+### Default durations
 
-| Blocco | Durata |
+| Block | Duration |
 |---|---|
-| Studio | 25:00 |
-| Pausa | 05:00 |
+| Study | 25:00 |
+| Break | 05:00 |
 
-## Struttura
+## Structure
 
-Il progetto è un singolo file `pomodoro-scacchi.html` che contiene HTML, CSS e JavaScript inline. Non ci sono dipendenze npm, framework o file di configurazione. L'unica risorsa esterna è il font [JetBrains Mono](https://fonts.google.com/specimen/JetBrains+Mono) caricato da Google Fonts.
+The project is a single file `pomodoro-scacchi.html` containing HTML, CSS, and JavaScript inline. No npm dependencies, no framework, no config files. The only external resource is the [JetBrains Mono](https://fonts.google.com/specimen/JetBrains+Mono) font loaded from Google Fonts.
 
-## Compatibilità
+## Compatibility
 
-Richiede un browser con supporto a **Web Audio API** (tutti i browser desktop/mobile moderni). Il suono viene inizializzato al primo click dell'utente per rispettare le policy autoplay dei browser.
+Requires a browser with **Web Audio API** support (all modern desktop/mobile browsers). Sound is initialized on the first user click to comply with browser autoplay policies.
