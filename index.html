@@ -130,6 +130,30 @@
       <button class="btn ghost" id="resetBtn" type="button">Reset</button>
     </div>
 
+    <div class="stats-bar">
+      <div class="stat-block">
+        <span class="stat-label">Ciclo</span>
+        <div class="cycle-row">
+          <span class="stat-num" id="statCycleCount">0</span>
+          <span class="cycle-slash">/</span>
+          <div class="goal-wrap">
+            <button class="goal-btn" id="goalDec" type="button" aria-label="Diminuisci obiettivo">−</button>
+            <span class="stat-num" id="statCycleGoal">4</span>
+            <button class="goal-btn" id="goalInc" type="button" aria-label="Aumenta obiettivo">+</button>
+          </div>
+        </div>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat-block">
+        <span class="stat-label">Streak</span>
+        <span class="streak-val" id="statStreak">–</span>
+      </div>
+    </div>
+
+    <div class="session-log" id="sessionLogDetails">
+      <div class="log-summary">Oggi · <span id="statLogCount">0 cicli</span></div>
+      <ol class="log-list" id="sessionLogList"></ol>
+    </div>
 
   </div>
 

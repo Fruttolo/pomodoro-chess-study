@@ -18,10 +18,21 @@
   const studySecDec=$("studySecDec"), studySecInc=$("studySecInc");
   const breakMinDec=$("breakMinDec"), breakMinInc=$("breakMinInc");
   const breakSecDec=$("breakSecDec"), breakSecInc=$("breakSecInc");
+  const statCycleCount=$("statCycleCount"), statCycleGoal=$("statCycleGoal");
+  const goalDec=$("goalDec"), goalInc=$("goalInc");
+  const statStreak=$("statStreak"), statLogCount=$("statLogCount");
+  const sessionLogList=$("sessionLogList");
 
   // ---------- stepper state ----------
   let sMin=25, sSec=0, bMin=5, bSec=0;
   let studySoundEnabled=true, breakSoundEnabled=true;
+
+  // ---------- stats state ----------
+  let cycleGoal=4;
+  let todayLog=[];      // [{startTime, durationSec, interruptions}]
+  let streakData={lastDate:null, streak:0};
+  let currentCycleStart=0;   // performance.now() at cycle start
+  let currentInterruptions=0;
 
   // ---------- persistence ----------
   function saveSettings(){
@@ -42,6 +53,46 @@
     }catch(e){}
   }
 
+  // ---------- stats persistence ----------
+  function todayStr(){ return new Date().toISOString().slice(0,10); }
+  function saveStats(){
+    const d=todayStr();
+    localStorage.setItem('pomodoroLog_'+d, JSON.stringify(todayLog));
+    localStorage.setItem('pomodoroStreak', JSON.stringify(streakData));
+    localStorage.setItem('pomodoroCycleGoal', String(cycleGoal));
+  }
+  function loadStats(){
+    try{
+      const g=localStorage.getItem('pomodoroCycleGoal');
+      if(g) cycleGoal=Math.max(1,parseInt(g,10)||4);
+    }catch(e){}
+    try{
+      const raw=localStorage.getItem('pomodoroLog_'+todayStr());
+      if(raw) todayLog=JSON.parse(raw);
+    }catch(e){}
+    try{
+      const raw=localStorage.getItem('pomodoroStreak');
+      if(raw) streakData=JSON.parse(raw);
+    }catch(e){}
+  }
+  function updateStreak(){
+    const today=todayStr();
+    if(streakData.lastDate===today) return;
+    const yesterday=new Date(Date.now()-864e5).toISOString().slice(0,10);
+    streakData.streak = streakData.lastDate===yesterday ? streakData.streak+1 : 1;
+    streakData.lastDate=today;
+  }
+  function recordCycle(){
+    const elapsed=performance.now()-currentCycleStart;
+    const startDate=new Date(Date.now()-elapsed);
+    const startTime=startDate.toTimeString().slice(0,5);
+    const durationSec=Math.round(elapsed/1000);
+    todayLog.push({startTime, durationSec, interruptions:currentInterruptions});
+    updateStreak();
+    saveStats();
+    if(todayLog.length===cycleGoal) playGoalSound();
+  }
+
   // ---------- state ----------
   let phase="idle";          // "idle" | "running"
   let active="study";        // "study" | "break"
@@ -59,6 +110,10 @@
     return String(m).padStart(2,"0")+":"+String(s).padStart(2,"0");
   }
   function fmtN(n,pad){ return String(n).padStart(pad,"0"); }
+  function fmtDuration(sec){
+    const m=Math.floor(sec/60), s=sec%60;
+    return m+'m'+(s>0?' '+s+'s':'');
+  }
   function clamp(v,min,max){ v=parseInt(v,10); return isNaN(v)?min:Math.max(min,Math.min(max,v)); }
   function readInputs(){
     studyTotal=Math.max(1, sMin*60+sSec);
@@ -125,6 +180,25 @@
     phraseCount=0;
     if(melodyTimer){ clearInterval(melodyTimer); melodyTimer=null; }
     render();
+  }
+
+  // ---------- goal sound (fanfare, played once) ----------
+  function playGoalSound(){
+    ensureCtx();
+    if(!actx) return;
+    const notes=[523.25,659.25,783.99,1046.5,1318.51]; // C5 E5 G5 C6 E6
+    const now=actx.currentTime+0.02;
+    notes.forEach((freq,i)=>{
+      const osc=actx.createOscillator(), gain=actx.createGain();
+      osc.type="triangle";
+      osc.frequency.value=freq;
+      const t=now+i*0.14;
+      gain.gain.setValueAtTime(0.001,t);
+      gain.gain.exponentialRampToValueAtTime(0.28,t+0.015);
+      gain.gain.exponentialRampToValueAtTime(0.001,t+0.65);
+      osc.connect(gain); gain.connect(actx.destination);
+      osc.start(t); osc.stop(t+0.8);
+    });
   }
 
   // ---------- picture-in-picture ----------
@@ -221,20 +295,23 @@
   }
 
   function finish(which){
-    // RULE: study finishes but pause still has time ->
-    // do NOT switch to pause. Reset study and bank one pause block onto pause remaining.
+    // RULE: study finishes but break still has time ->
+    // do NOT switch to break. Reset study and bank one break block onto break remaining.
     if(which==="study" && breakRem>0 && !breakDone){
+      recordCycle();
       studyRem=studyTotal;
       studyDone=false;
       breakRem=breakRem+breakTotal;
       active="study";
       lastTs=performance.now();
+      currentCycleStart=performance.now();
+      currentInterruptions=0;
       if(studySoundEnabled) startSound();
       render();
       return;
     }
 
-    if(which==="study") studyDone=true; else breakDone=true;
+    if(which==="study"){ recordCycle(); studyDone=true; } else breakDone=true;
     if(which==="break" && breakSoundEnabled) startSound();
     if(which==="study" && studySoundEnabled) startSound();
     if(studyDone && breakDone){
@@ -242,9 +319,16 @@
       studyRem=studyTotal; breakRem=breakTotal;
       studyDone=false; breakDone=false;
       active="study";
+      currentCycleStart=performance.now();
+      currentInterruptions=0;
     }else{
       // hand over to the other timer automatically
       active = (which==="study") ? "break" : "study";
+      if(which==="break"){
+        // break ended, new study cycle begins
+        currentCycleStart=performance.now();
+        currentInterruptions=0;
+      }
     }
     lastTs=performance.now();
     positionSpotlight(active==="study" ? cardStudy : cardBreak, active, false);
@@ -282,6 +366,8 @@
     studyDone=false; breakDone=false;
     active="study"; phase="running";
     lastTs=performance.now();
+    currentCycleStart=performance.now();
+    currentInterruptions=0;
     ensureLoop();
     render();
     setTimeout(()=>{ if(phase==="running") positionSpotlight(cardStudy,"study",true,true); }, 340);
@@ -290,6 +376,7 @@
     if(phase!=="running") return;
     if(active==="study" && breakDone) return;   // can't go to a used-up timer
     if(active==="break" && studyDone) return;
+    if(active==="study") currentInterruptions++;
     active = (active==="study") ? "break" : "study";
     lastTs=performance.now();
     positionSpotlight(active==="study" ? cardStudy : cardBreak, active, false);
@@ -374,6 +461,40 @@
       document.title  = fmt(activeRem)+" "+label;
     }
     drawPip();
+    renderStats();
+  }
+
+  // ---------- stats render ----------
+  function renderStats(){
+    const count=todayLog.length;
+    statCycleCount.textContent=count;
+    statCycleGoal.textContent=cycleGoal;
+    statCycleCount.classList.toggle("goal-reached", count>0 && count>=cycleGoal);
+
+    const s=streakData.streak||0;
+    statStreak.textContent=s===0?'–':s+(s===1?' giorno':' giorni');
+
+    statLogCount.textContent=count+(count===1?' ciclo':' cicli');
+
+    sessionLogList.innerHTML='';
+    if(count===0){
+      const li=document.createElement('li');
+      li.className='log-empty';
+      li.textContent='Nessun ciclo completato oggi.';
+      sessionLogList.appendChild(li);
+    }else{
+      todayLog.forEach((c,i)=>{
+        const li=document.createElement('li');
+        li.className='log-item';
+        const intStr=c.interruptions>0?c.interruptions+'×':'–';
+        li.innerHTML=
+          '<span class="log-n">'+(i+1)+'</span>'+
+          '<span class="log-time">'+c.startTime+'</span>'+
+          '<span class="log-dur">'+fmtDuration(c.durationSec)+'</span>'+
+          '<span class="log-int">'+intStr+'</span>';
+        sessionLogList.appendChild(li);
+      });
+    }
   }
 
   // ---------- wiring ----------
@@ -422,6 +543,17 @@
     saveSettings();
   });
 
+  goalDec.addEventListener("click",()=>{
+    cycleGoal=Math.max(1,cycleGoal-1);
+    saveStats();
+    renderStats();
+  });
+  goalInc.addEventListener("click",()=>{
+    cycleGoal=Math.min(99,cycleGoal+1);
+    saveStats();
+    renderStats();
+  });
+
   document.addEventListener("visibilitychange", ()=>{
     if(!document.hidden && ringing) ensureCtx();
     if(document.hidden && phase==='running') enterPip();
@@ -435,6 +567,7 @@
   });
 
   loadSettings();
+  loadStats();
   studySoundBtn.classList.toggle("muted",!studySoundEnabled);
   breakSoundBtn.classList.toggle("muted",!breakSoundEnabled);
   readInputs();
