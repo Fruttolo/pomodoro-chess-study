@@ -228,18 +228,30 @@
   .hidden{display:none !important;}
 
   /* ---- card editor (stato idle) ---- */
-  .stepper{display:flex;flex-direction:column;align-items:center;gap:5px;}
+  .stepper{display:flex;flex-direction:column;align-items:center;}
   .step-btn{
     font-family:var(--mono);font-size:1rem;font-weight:700;
-    width:40px;height:26px;padding:0;
+    width:100%;height:18px;padding:0;
     border:1px solid var(--line);border-radius:6px;
     background:var(--bg2);color:var(--muted);
     cursor:pointer;display:flex;align-items:center;justify-content:center;
-    line-height:1;transition:background .12s,color .12s;
+    line-height:1;
+    transition:height .32s ease, opacity .22s ease, margin .32s ease, background .12s, color .12s;
     -webkit-tap-highlight-color:transparent;flex:0 0 auto;
+    overflow:hidden;margin:2px 0;
   }
   .step-btn:hover{background:var(--surface-2);color:var(--text);}
   .step-btn:active{background:var(--line);}
+  body.running .step-btn{height:0;margin:0;opacity:0;pointer-events:none;}
+  body.running .card-editor .step-val{pointer-events:none;}
+  .card[data-t="study"].active .card-editor .step-val{color:#bcd6ff;transition:color .25s;}
+  .card[data-t="break"].active .card-editor .step-val{color:#a9f0d6;transition:color .25s;}
+  .card.waiting .card-editor .step-val{color:var(--muted);}
+  .card.done .card-editor .step-val{color:var(--faint);}
+  .card[data-t="study"].active .card-editor .colon{color:rgba(91,157,255,.5);transition:color .25s;}
+  .card[data-t="break"].active .card-editor .colon{color:rgba(51,211,154,.5);transition:color .25s;}
+  .card.waiting .card-editor .colon{color:var(--faint);}
+  .card.done .card-editor .colon{color:var(--faint);}
   .card-editor{
     display:flex;align-items:center;justify-content:center;
     gap:4px;padding:6px 0 4px;
@@ -626,10 +638,21 @@
     resetBtn.classList.toggle("hidden", phase!=="running");
 
     const isIdle = phase==="idle";
-    studyEditor.classList.toggle("hidden", !isIdle);
-    breakEditor.classList.toggle("hidden", !isIdle);
-    timeStudy.classList.toggle("hidden", isIdle);
-    timeBreak.classList.toggle("hidden", isIdle);
+    document.body.classList.toggle("running", !isIdle);
+
+    if(!isIdle){
+      const sS=Math.max(0,Math.ceil(studyRem));
+      studyMinVal.value=String(Math.floor(sS/60)).padStart(2,"0");
+      studySecVal.value=String(sS%60).padStart(2,"0");
+      const bS=Math.max(0,Math.ceil(breakRem));
+      breakMinVal.value=String(Math.floor(bS/60)).padStart(2,"0");
+      breakSecVal.value=String(bS%60).padStart(2,"0");
+      [studyMinVal,studySecVal,breakMinVal,breakSecVal].forEach(el=>el.readOnly=true);
+    }else{
+      [studyMinVal,studySecVal,breakMinVal,breakSecVal].forEach(el=>el.readOnly=false);
+      renderSteppers();
+    }
+
     barWrapStudy.classList.toggle("hidden", false);
     barWrapBreak.classList.toggle("hidden", false);
 
@@ -659,7 +682,7 @@
   breakSecVal.addEventListener("input",()=>{ bSec=clamp(breakSecVal.value,0,59);  applyStep(); });
 
   [studyMinVal,studySecVal,breakMinVal,breakSecVal].forEach(el=>{
-    el.addEventListener("blur",()=>{ renderSteppers(); });
+    el.addEventListener("blur",()=>{ if(phase==="idle") renderSteppers(); });
   });
 
   studySoundBtn.addEventListener("click", ()=>{
