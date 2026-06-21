@@ -674,6 +674,14 @@
     barWrapBreak.classList.toggle("hidden", false);
 
     document.body.classList.toggle("ringing", ringing);
+
+    if(phase==="idle"){
+      document.title="Studio ⇄ Pausa — timer a scacchi";
+    }else{
+      const activeRem = active==="study" ? studyRem : breakRem;
+      const label     = active==="study" ? "Studio" : "Pausa";
+      document.title  = fmt(activeRem)+" "+label;
+    }
   }
 
   // ---------- wiring ----------
