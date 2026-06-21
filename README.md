@@ -20,9 +20,9 @@ This means unused break time accumulates. If you let Study expire twice before t
 | Situation | What happens |
 |---|---|
 | Study expires, Break still has time | Study resets and restarts; one Break block added to Break's remaining time; sound plays (if enabled) |
-| Study expires, Break already used up | Study is marked exhausted; control passes to Break automatically |
-| Break expires | Control passes back to Study automatically |
-| Both expired | Full reset; Study starts again from the top |
+| Break expires, Study still has time | Break is marked done; Study takes over automatically |
+| Study expires after Break is already done | Both are done → full session reset; Study starts again from the top |
+| Break expires after Study is already done | Both are done → full session reset; Study starts again from the top |
 
 ## Features
 
