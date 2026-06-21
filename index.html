@@ -473,6 +473,7 @@
   let studyDone=false, breakDone=false;
   let ringing=false;
   let lastTs=0, loopId=null;
+  let pipCanvas=null, pipVideo=null, pipCtx=null;
 
   // ---------- helpers ----------
   function fmt(sec){
@@ -512,6 +513,7 @@
   function ensureCtx(){
     if(!actx) actx=new (window.AudioContext||window.webkitAudioContext)();
     if(actx.state==="suspended") actx.resume();
+    setupPip();
   }
   function playNote(freq,startTime){
     const osc=actx.createOscillator(), gain=actx.createGain();
@@ -541,6 +543,52 @@
     ringing=false;
     if(melodyTimer){ clearInterval(melodyTimer); melodyTimer=null; }
     render();
+  }
+
+  // ---------- picture-in-picture ----------
+  function setupPip(){
+    if(pipVideo||!document.pictureInPictureEnabled) return;
+    pipCanvas=document.createElement('canvas');
+    pipCanvas.width=320; pipCanvas.height=180;
+    pipCtx=pipCanvas.getContext('2d');
+    pipVideo=document.createElement('video');
+    pipVideo.srcObject=pipCanvas.captureStream(2);
+    pipVideo.muted=true;
+    pipVideo.play().catch(()=>{});
+  }
+  function drawPip(){
+    if(!pipCtx||phase==='idle') return;
+    const w=pipCanvas.width, h=pipCanvas.height;
+    const rem=active==='study'?studyRem:breakRem;
+    const total=active==='study'?studyTotal:breakTotal;
+    const label=active==='study'?'STUDY':'BREAK';
+    const color=active==='study'?'#5b9dff':'#33d39a';
+    const progress=total>0?Math.max(0,Math.min(1,rem/total)):0;
+    pipCtx.fillStyle='#0f1115';
+    pipCtx.fillRect(0,0,w,h);
+    pipCtx.font='600 11px -apple-system,sans-serif';
+    pipCtx.fillStyle=color;
+    pipCtx.textAlign='center';
+    pipCtx.fillText(label,w/2,46);
+    pipCtx.font='700 56px "JetBrains Mono",ui-monospace,monospace';
+    pipCtx.fillStyle='#eef1f6';
+    pipCtx.fillText(fmt(rem),w/2,114);
+    pipCtx.fillStyle='#2a3140';
+    pipCtx.fillRect(24,140,w-48,5);
+    pipCtx.fillStyle=color;
+    pipCtx.fillRect(24,140,(w-48)*progress,5);
+  }
+  async function enterPip(){
+    if(!pipVideo||!document.pictureInPictureEnabled||phase!=='running') return;
+    try{
+      drawPip();
+      if(document.pictureInPictureElement!==pipVideo) await pipVideo.requestPictureInPicture();
+    }catch(e){}
+  }
+  async function exitPip(){
+    try{
+      if(document.pictureInPictureElement) await document.exitPictureInPicture();
+    }catch(e){}
   }
 
   // ---------- core loop ----------
@@ -684,6 +732,7 @@
       const label     = active==="study" ? "Study" : "Break";
       document.title  = fmt(activeRem)+" "+label;
     }
+    drawPip();
   }
 
   // ---------- wiring ----------
@@ -721,7 +770,11 @@
     breakSoundBtn.classList.toggle("muted",!breakSoundEnabled);
   });
 
-  document.addEventListener("visibilitychange", ()=>{ if(!document.hidden && ringing) ensureCtx(); });
+  document.addEventListener("visibilitychange", ()=>{
+    if(!document.hidden && ringing) ensureCtx();
+    if(document.hidden && phase==='running') enterPip();
+    else if(!document.hidden) exitPip();
+  });
 
   readInputs();
   studyRem=studyTotal; breakRem=breakTotal;
