@@ -98,26 +98,23 @@
         <button class="modal-close" id="modalClose" type="button" aria-label="Close">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
         </button>
-        <h2 id="modalTitle">Pomodoro Chess</h2>
+        <h2 id="modalTitle">Study ⇄ Break</h2>
         <p class="modal-eyebrow">How it works</p>
 
-        <h3>The concept</h3>
-        <p>Pomodoro Chess combines the <strong>Pomodoro technique</strong> with a <strong>chess clock</strong>. Two timers run in alternation — Study and Break — and only one ticks at a time, just like a chess clock.</p>
+        <h3>Chess clock concept</h3>
+        <p>Two timers — <strong>Study</strong> and <strong>Break</strong> — run in alternation. Only one ticks at a time. Press <strong>Start</strong> to begin studying. Press <strong>Switch to break</strong> to hand control to Break. Press <strong>Resume study</strong> to switch back.</p>
 
-        <h3>Study timer</h3>
-        <p>Set your study duration (default <strong>25 min</strong>). Press <strong>Start</strong> and the study clock counts down. When it hits zero, it reloads and the accumulated break time grows — you earn a break block.</p>
+        <h3>Study expires → break bank grows</h3>
+        <p>When Study hits zero it <em>does not</em> force you into a break. Instead it resets to full and keeps running — and one break block is <strong>added on top</strong> of whatever Break time is left. You decide when to take the break; the app just banks what you've earned.</p>
 
-        <h3>Break timer</h3>
-        <p>Set your break duration (default <strong>5 min</strong>). Press <strong>Switch to break</strong> to pause study and run the break clock. When break time runs out, study resumes automatically.</p>
-
-        <h3>Chess clock behavior</h3>
-        <p>If the study timer finishes while break time is still available, a new study block is added and the break bank grows. Once both timers are fully used, the session resets and restarts automatically.</p>
+        <h3>Break expires → study resumes</h3>
+        <p>When Break runs out, Study takes over automatically. Once both timers have been fully used, the whole session resets and Study starts again from the top.</p>
 
         <h3>Sound notifications</h3>
-        <p>Each card has a <strong>bell icon</strong> to toggle an end-of-timer chime. Break sound is on by default. Tap <strong>Stop sound</strong> to silence a ringing alarm.</p>
+        <p>Each card has a <strong>bell icon</strong> to toggle its end-of-timer chime independently. Both sounds are on by default. Tap <strong>Stop sound</strong> to silence a ringing alarm.</p>
 
         <h3>Picture-in-picture</h3>
-        <p>When you switch to another tab, the timer floats in a <strong>mini window</strong> via the browser's Picture-in-Picture API, so you can keep an eye on the countdown while working elsewhere.</p>
+        <p>While a session is running, switching to another tab automatically floats the active timer in a <strong>mini window</strong> via the browser's Picture-in-Picture API. It closes when you return to the tab.</p>
       </div>
     </div>
 
