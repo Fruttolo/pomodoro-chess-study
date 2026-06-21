@@ -276,6 +276,36 @@
   .settings.locked{opacity:.5;}
   .settings.locked .step-btn{pointer-events:none;}
 
+  /* ---- sound toggle ---- */
+  .toggle-wrap{display:flex;align-items:center;gap:9px;cursor:pointer;user-select:none;}
+  .toggle-wrap .lbl{
+    font-size:.7rem;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);
+  }
+  .toggle-switch{
+    position:relative;width:38px;height:22px;flex:0 0 auto;
+  }
+  .toggle-switch input{opacity:0;width:0;height:0;position:absolute;}
+  .toggle-track{
+    position:absolute;inset:0;
+    background:var(--surface-2);border:1px solid var(--line);border-radius:999px;
+    transition:background .2s,border-color .2s;
+  }
+  .toggle-thumb{
+    position:absolute;top:3px;left:3px;
+    width:14px;height:14px;border-radius:50%;
+    background:var(--faint);
+    transition:transform .18s,background .2s;
+  }
+  .toggle-switch input:checked ~ .toggle-track{
+    background:rgba(91,157,255,.18);border-color:var(--study);
+  }
+  .toggle-switch input:checked ~ .toggle-thumb{
+    transform:translateX(16px);background:var(--study);
+  }
+  .toggle-switch input:focus-visible ~ .toggle-track{
+    outline:2px solid #ffffff66;outline-offset:2px;
+  }
+
   /* ---- footnote ---- */
   .note{
     text-align:center;color:var(--faint);font-size:.8rem;line-height:1.55;
@@ -356,6 +386,14 @@
           </div>
         </div>
       </div>
+      <label class="set-group toggle-wrap" for="studySoundChk">
+        <div class="toggle-switch">
+          <input type="checkbox" id="studySoundChk" checked>
+          <div class="toggle-track"></div>
+          <div class="toggle-thumb"></div>
+        </div>
+        <span class="lbl">Suono studio</span>
+      </label>
       <div class="set-group">
         <span class="lbl">Pausa</span>
         <div class="timefield">
@@ -387,6 +425,7 @@
   const pillStudy=$("pillStudy"), pillBreak=$("pillBreak");
   const barStudy=$("barStudy"), barBreak=$("barBreak");
   const mainBtn=$("mainBtn"), stopBtn=$("stopBtn"), resetBtn=$("resetBtn");
+  const studySoundChk=$("studySoundChk");
   const settings=$("settings");
   const studyMinVal=$("studyMinVal"), studySecVal=$("studySecVal");
   const breakMinVal=$("breakMinVal"), breakSecVal=$("breakSecVal");
@@ -399,6 +438,7 @@
 
   // ---------- stepper state ----------
   let sMin=25, sSec=0, bMin=5, bSec=0;
+  let studySoundEnabled=true;
 
   // ---------- state ----------
   let phase="idle";          // "idle" | "running"
@@ -498,17 +538,19 @@
     // RULE: study finishes but pause still has time ->
     // do NOT switch to pause. Reset study and bank one pause block onto pause remaining.
     if(which==="study" && breakRem>0 && !breakDone){
-      studyRem=studyTotal;                // reset study (muto, niente suono)
+      studyRem=studyTotal;
       studyDone=false;
-      breakRem=breakRem+breakTotal;       // +1 blocco PAUSA al rimanente
-      active="study";                     // niente passaggio automatico
+      breakRem=breakRem+breakTotal;
+      active="study";
       lastTs=performance.now();
+      if(studySoundEnabled) startSound();
       render();
       return;
     }
 
     if(which==="study") studyDone=true; else breakDone=true;
-    if(which==="break") startSound();     // rings only when break expires
+    if(which==="break") startSound();
+    if(which==="study" && studySoundEnabled) startSound();
     if(studyDone && breakDone){
       // both used up -> reset whole session, study runs again
       studyRem=studyTotal; breakRem=breakTotal;
@@ -622,6 +664,8 @@
   [studyMinVal,studySecVal,breakMinVal,breakSecVal].forEach(el=>{
     el.addEventListener("blur",()=>{ renderSteppers(); });
   });
+
+  studySoundChk.addEventListener("change", ()=>{ studySoundEnabled=studySoundChk.checked; });
 
   document.addEventListener("visibilitychange", ()=>{ if(!document.hidden && ringing) ensureCtx(); });
 
