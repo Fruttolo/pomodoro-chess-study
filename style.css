@@ -39,7 +39,7 @@ body{
 .wrap{
   width:100%;
   max-width:660px;
-  margin:auto;
+  margin:clamp(40px,8vh,100px) auto 0;
   display:flex;
   flex-direction:column;
   gap:22px;
@@ -149,7 +149,7 @@ h1 .swap{color:var(--muted);font-weight:500;padding:0 .12em;}
 .card[data-t="break"].active .bar > i{background:var(--break);}
 .card[data-t="study"].active .pill{color:#bcd6ff;border-color:var(--study);background:transparent;}
 .card[data-t="break"].active .pill{color:#a9f0d6;border-color:var(--break);background:transparent;}
-.card.active{animation:breathe 2.6s ease-in-out infinite;}
+.card.active .card-editor{animation:breathe 2.6s ease-in-out infinite;}
 @keyframes breathe{50%{transform:translateY(-2px);}}
 
 /* waiting (running, not active) */
