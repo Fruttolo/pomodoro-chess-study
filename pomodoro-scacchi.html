@@ -317,6 +317,24 @@
   }
   @keyframes vig{50%{box-shadow:inset 0 0 150px 18px rgba(255,77,82,.30);}}
 
+  /* ---- reset button slide-in ---- */
+  #resetBtn{
+    min-height:0;
+    max-height:0;
+    opacity:0;
+    overflow:hidden;
+    pointer-events:none;
+    margin-top:-10px;
+    transition:max-height .35s ease, opacity .28s ease, margin-top .35s ease;
+  }
+  body.running #resetBtn{
+    min-height:48px;
+    max-height:56px;
+    opacity:1;
+    pointer-events:auto;
+    margin-top:0;
+  }
+
   @media (prefers-reduced-motion: reduce){
     *{animation:none !important;}
     .btn:active{transform:none;}
@@ -414,7 +432,7 @@
         Ferma suono
       </button>
       <button class="btn primary" id="mainBtn" type="button">Avvia</button>
-      <button class="btn ghost hidden" id="resetBtn" type="button">Reset</button>
+      <button class="btn ghost" id="resetBtn" type="button">Reset</button>
     </div>
 
 
@@ -635,7 +653,6 @@
     }
 
     stopBtn.classList.toggle("hidden", !ringing);
-    resetBtn.classList.toggle("hidden", phase!=="running");
 
     const isIdle = phase==="idle";
     document.body.classList.toggle("running", !isIdle);
