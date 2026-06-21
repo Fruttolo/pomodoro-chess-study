@@ -290,6 +290,7 @@
     }
 
     stopBtn.classList.toggle("hidden", !ringing);
+    mainBtn.classList.toggle("hidden", ringing);
 
     const isIdle = phase==="idle";
     document.body.classList.toggle("running", !isIdle);
