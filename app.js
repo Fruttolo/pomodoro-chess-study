@@ -20,7 +20,7 @@
 
   // ---------- stepper state ----------
   let sMin=25, sSec=0, bMin=5, bSec=0;
-  let studySoundEnabled=false, breakSoundEnabled=true;
+  let studySoundEnabled=true, breakSoundEnabled=true;
 
   // ---------- state ----------
   let phase="idle";          // "idle" | "running"
